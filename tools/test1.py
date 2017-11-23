@@ -20,7 +20,7 @@ from help_utils import help_utils
 from tools import restore_model
 from libs.box_utils.coordinate_convert import back_forward_convert
 from libs.box_utils.boxes_utils import get_horizen_minAreaRectangle
-from libs.fast_rcnn import build_fast_rcnn
+from libs.fast_rcnn import build_fast_rcnn1
 
 
 os.environ["CUDA_VISIBLE_DEVICES"] = '1'
@@ -86,31 +86,33 @@ def test(img_num):
         # ***********************************************************************************************
         # *                                         Fast RCNN                                           *
         # ***********************************************************************************************
-        fast_rcnn = build_fast_rcnn.FastRCNN(feature_pyramid=rpn.feature_pyramid,
-                                             rpn_proposals_boxes=rpn_proposals_boxes,
-                                             rpn_proposals_scores=rpn_proposals_scores,
-                                             img_shape=tf.shape(img_batch),
-                                             roi_size=cfgs.ROI_SIZE,
-                                             roi_pool_kernel_size=cfgs.ROI_POOL_KERNEL_SIZE,
-                                             scale_factors=cfgs.SCALE_FACTORS,
-                                             gtboxes_and_label=None,
-                                             gtboxes_and_label_minAreaRectangle=gtboxes_and_label_minAreaRectangle,
-                                             fast_rcnn_nms_iou_threshold=cfgs.FAST_RCNN_NMS_IOU_THRESHOLD,
-                                             fast_rcnn_maximum_boxes_per_img=100,
-                                             fast_rcnn_nms_max_boxes_per_class=cfgs.FAST_RCNN_NMS_MAX_BOXES_PER_CLASS,
-                                             show_detections_score_threshold=cfgs.FINAL_SCORE_THRESHOLD,
-                                             # show detections which score >= 0.6
-                                             num_classes=cfgs.CLASS_NUM,
-                                             fast_rcnn_minibatch_size=cfgs.FAST_RCNN_MINIBATCH_SIZE,
-                                             fast_rcnn_positives_ratio=cfgs.FAST_RCNN_POSITIVE_RATE,
-                                             fast_rcnn_positives_iou_threshold=cfgs.FAST_RCNN_IOU_POSITIVE_THRESHOLD,
-                                             # iou>0.5 is positive, iou<0.5 is negative
-                                             use_dropout=cfgs.USE_DROPOUT,
-                                             weight_decay=cfgs.WEIGHT_DECAY[cfgs.NET_NAME],
-                                             is_training=False,
-                                             level=cfgs.LEVEL)
+        fast_rcnn = build_fast_rcnn1.FastRCNN(feature_pyramid=rpn.feature_pyramid,
+                                              rpn_proposals_boxes=rpn_proposals_boxes,
+                                              rpn_proposals_scores=rpn_proposals_scores,
+                                              img_shape=tf.shape(img_batch),
+                                              roi_size=cfgs.ROI_SIZE,
+                                              roi_pool_kernel_size=cfgs.ROI_POOL_KERNEL_SIZE,
+                                              scale_factors=cfgs.SCALE_FACTORS,
+                                              gtboxes_and_label=None,
+                                              gtboxes_and_label_minAreaRectangle=gtboxes_and_label_minAreaRectangle,
+                                              fast_rcnn_nms_iou_threshold=cfgs.FAST_RCNN_NMS_IOU_THRESHOLD,
+                                              fast_rcnn_maximum_boxes_per_img=100,
+                                              fast_rcnn_nms_max_boxes_per_class=cfgs.FAST_RCNN_NMS_MAX_BOXES_PER_CLASS,
+                                              show_detections_score_threshold=cfgs.FINAL_SCORE_THRESHOLD,
+                                              # show detections which score >= 0.6
+                                              num_classes=cfgs.CLASS_NUM,
+                                              fast_rcnn_minibatch_size=cfgs.FAST_RCNN_MINIBATCH_SIZE,
+                                              fast_rcnn_positives_ratio=cfgs.FAST_RCNN_POSITIVE_RATE,
+                                              fast_rcnn_positives_iou_threshold=cfgs.FAST_RCNN_IOU_POSITIVE_THRESHOLD,
+                                              # iou>0.5 is positive, iou<0.5 is negative
+                                              use_dropout=cfgs.USE_DROPOUT,
+                                              weight_decay=cfgs.WEIGHT_DECAY[cfgs.NET_NAME],
+                                              is_training=False,
+                                              level=cfgs.LEVEL)
 
-        fast_rcnn_decode_boxes, fast_rcnn_score, num_of_objects, detection_category = fast_rcnn.fast_rcnn_predict()
+        fast_rcnn_decode_boxes, fast_rcnn_score, num_of_objects, detection_category, \
+        fast_rcnn_decode_boxes_rotate, fast_rcnn_score_rotate, num_of_objects_rotate, detection_category_rotate = \
+            fast_rcnn.fast_rcnn_predict()
 
         # train
         init_op = tf.group(
@@ -133,9 +135,11 @@ def test(img_num):
                 start = time.time()
 
                 _img_name_batch, _img_batch, _gtboxes_and_label, _gtboxes_and_label_minAreaRectangle, \
-                _fast_rcnn_decode_boxes, _fast_rcnn_score, _detection_category \
+                _fast_rcnn_decode_boxes, _fast_rcnn_score, _detection_category, _fast_rcnn_decode_boxes_rotate, \
+                _fast_rcnn_score_rotate, _detection_category_rotate \
                     = sess.run([img_name_batch, img_batch, gtboxes_and_label, gtboxes_and_label_minAreaRectangle,
-                                fast_rcnn_decode_boxes, fast_rcnn_score, detection_category])
+                                fast_rcnn_decode_boxes, fast_rcnn_score, detection_category, fast_rcnn_decode_boxes_rotate,
+                                fast_rcnn_score_rotate, detection_category_rotate])
                 end = time.time()
 
                 _img_batch = np.squeeze(_img_batch, axis=0)
@@ -145,16 +149,29 @@ def test(img_num):
                                                                   labels=_detection_category,
                                                                   scores=_fast_rcnn_score)
 
+                _img_batch_fpn_rotate = help_utils.draw_rotate_box_cv(_img_batch,
+                                                                      boxes=_fast_rcnn_decode_boxes_rotate,
+                                                                      labels=_detection_category_rotate,
+                                                                      scores=_fast_rcnn_score_rotate)
+
                 cv2.imwrite(cfgs.TEST_SAVE_PATH + '/{}_horizontal_fpn.jpg'.format(str(_img_name_batch[0])), _img_batch_fpn_horizonal)
+                cv2.imwrite(cfgs.TEST_SAVE_PATH + '/{}_rotate_fpn.jpg'.format(str(_img_name_batch[0])), _img_batch_fpn_rotate)
 
                 temp_label_horizontal = np.reshape(_gtboxes_and_label[:, -1:], [-1, ]).astype(np.int64)
+                temp_label_rotate = np.reshape(_gtboxes_and_label[:, -1:], [-1, ]).astype(np.int64)
 
                 _img_batch_gt_horizontal = help_utils.draw_box_cv(_img_batch,
                                                                   boxes=_gtboxes_and_label_minAreaRectangle[:, :-1],
                                                                   labels=temp_label_horizontal,
                                                                   scores=None)
 
+                _img_batch_gt_rotate = help_utils.draw_rotate_box_cv(_img_batch,
+                                                                     boxes=_gtboxes_and_label[:, :-1],
+                                                                     labels=temp_label_rotate,
+                                                                     scores=None)
+
                 cv2.imwrite(cfgs.TEST_SAVE_PATH + '/{}_horizontal_gt.jpg'.format(str(_img_name_batch[0])), _img_batch_gt_horizontal)
+                cv2.imwrite(cfgs.TEST_SAVE_PATH + '/{}_rotate_gt.jpg'.format(str(_img_name_batch[0])), _img_batch_gt_rotate)
 
                 view_bar('{} image cost {}s'.format(str(_img_name_batch[0]), (end - start)), i + 1, img_num)
 

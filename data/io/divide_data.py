@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+from __future__ import division, print_function, absolute_import
+import sys
+sys.path.append('../../')
 import shutil
 import os
 import random

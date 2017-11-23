@@ -12,6 +12,7 @@ from libs.box_utils import iou
 from libs.losses import losses
 from help_utils.help_utils import print_tensors
 from libs.box_utils import nms_rotate
+import numpy as np
 
 DEBUG = False
 
@@ -82,8 +83,8 @@ class FastRCNN(object):
 
             levels = tf.round(4. + tf.log(tf.sqrt(w*h + 1e-8)/224.0) / tf.log(2.))
 
-            levels = tf.maximum(levels, tf.ones_like(levels)*2)  # level minimum is 2
-            levels = tf.minimum(levels, tf.ones_like(levels)*5)  # level maximum is 5
+            levels = tf.maximum(levels, tf.ones_like(levels) * (np.float32(self.min_level)))  # level minimum is 2
+            levels = tf.minimum(levels, tf.ones_like(levels) * (np.float32(self.max_level)))  # level maximum is 5
 
             return tf.cast(levels, tf.int32)
 

@@ -14,7 +14,7 @@ from libs.rpn import build_rpn
 from help_utils.help_utils import *
 from libs.configs import cfgs
 from tools import restore_model
-from libs.fast_rcnn import build_fast_rcnn
+from libs.fast_rcnn import build_fast_rcnn1
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
@@ -77,31 +77,32 @@ def inference():
         # ***********************************************************************************************
         # *                                         Fast RCNN                                           *
         # ***********************************************************************************************
-        fast_rcnn = build_fast_rcnn.FastRCNN(feature_pyramid=rpn.feature_pyramid,
-                                             rpn_proposals_boxes=rpn_proposals_boxes,
-                                             rpn_proposals_scores=rpn_proposals_scores,
-                                             img_shape=tf.shape(img_batch),
-                                             roi_size=cfgs.ROI_SIZE,
-                                             roi_pool_kernel_size=cfgs.ROI_POOL_KERNEL_SIZE,
-                                             scale_factors=cfgs.SCALE_FACTORS,
-                                             gtboxes_and_label=None,
-                                             gtboxes_and_label_minAreaRectangle=None,
-                                             fast_rcnn_nms_iou_threshold=cfgs.FAST_RCNN_NMS_IOU_THRESHOLD,
-                                             fast_rcnn_maximum_boxes_per_img=100,
-                                             fast_rcnn_nms_max_boxes_per_class=cfgs.FAST_RCNN_NMS_MAX_BOXES_PER_CLASS,
-                                             show_detections_score_threshold=cfgs.FINAL_SCORE_THRESHOLD,
-                                             # show detections which score >= 0.6
-                                             num_classes=cfgs.CLASS_NUM,
-                                             fast_rcnn_minibatch_size=cfgs.FAST_RCNN_MINIBATCH_SIZE,
-                                             fast_rcnn_positives_ratio=cfgs.FAST_RCNN_POSITIVE_RATE,
-                                             fast_rcnn_positives_iou_threshold=cfgs.FAST_RCNN_IOU_POSITIVE_THRESHOLD,
-                                             # iou>0.5 is positive, iou<0.5 is negative
-                                             use_dropout=cfgs.USE_DROPOUT,
-                                             weight_decay=cfgs.WEIGHT_DECAY[cfgs.NET_NAME],
-                                             is_training=False,
-                                             level=cfgs.LEVEL)
+        fast_rcnn = build_fast_rcnn1.FastRCNN(feature_pyramid=rpn.feature_pyramid,
+                                              rpn_proposals_boxes=rpn_proposals_boxes,
+                                              rpn_proposals_scores=rpn_proposals_scores,
+                                              img_shape=tf.shape(img_batch),
+                                              roi_size=cfgs.ROI_SIZE,
+                                              roi_pool_kernel_size=cfgs.ROI_POOL_KERNEL_SIZE,
+                                              scale_factors=cfgs.SCALE_FACTORS,
+                                              gtboxes_and_label=None,
+                                              gtboxes_and_label_minAreaRectangle=None,
+                                              fast_rcnn_nms_iou_threshold=cfgs.FAST_RCNN_NMS_IOU_THRESHOLD,
+                                              fast_rcnn_maximum_boxes_per_img=100,
+                                              fast_rcnn_nms_max_boxes_per_class=cfgs.FAST_RCNN_NMS_MAX_BOXES_PER_CLASS,
+                                              show_detections_score_threshold=cfgs.FINAL_SCORE_THRESHOLD,
+                                              # show detections which score >= 0.6
+                                              num_classes=cfgs.CLASS_NUM,
+                                              fast_rcnn_minibatch_size=cfgs.FAST_RCNN_MINIBATCH_SIZE,
+                                              fast_rcnn_positives_ratio=cfgs.FAST_RCNN_POSITIVE_RATE,
+                                              fast_rcnn_positives_iou_threshold=cfgs.FAST_RCNN_IOU_POSITIVE_THRESHOLD,
+                                              # iou>0.5 is positive, iou<0.5 is negative
+                                              use_dropout=cfgs.USE_DROPOUT,
+                                              weight_decay=cfgs.WEIGHT_DECAY[cfgs.NET_NAME],
+                                              is_training=False,
+                                              level=cfgs.LEVEL)
 
-        fast_rcnn_decode_boxes, fast_rcnn_score, num_of_objects, detection_category = \
+        fast_rcnn_decode_boxes, fast_rcnn_score, num_of_objects, detection_category, \
+        fast_rcnn_decode_boxes_rotate, fast_rcnn_score_rotate, num_of_objects_rotate, detection_category_rotate = \
             fast_rcnn.fast_rcnn_predict()
 
         init_op = tf.group(
@@ -123,8 +124,10 @@ def inference():
 
                 start = time.time()
 
-                _img_batch, _fast_rcnn_decode_boxes, _fast_rcnn_score, _detection_category = \
-                    sess.run([img_batch, fast_rcnn_decode_boxes, fast_rcnn_score, detection_category],
+                _img_batch, _fast_rcnn_decode_boxes, _fast_rcnn_score, _detection_category, \
+                _fast_rcnn_decode_boxes_rotate,  _fast_rcnn_score_rotate, _detection_category_rotate = \
+                    sess.run([img_batch, fast_rcnn_decode_boxes, fast_rcnn_score, detection_category,
+                              fast_rcnn_decode_boxes_rotate, fast_rcnn_score_rotate, detection_category_rotate],
                              feed_dict={img_plac: img})
                 end = time.time()
 
@@ -135,7 +138,13 @@ def inference():
                                                 labels=_detection_category,
                                                 scores=_fast_rcnn_score)
 
+                img_rotate_np = draw_rotate_box_cv(img_np,
+                                                   boxes=_fast_rcnn_decode_boxes_rotate,
+                                                   labels=_detection_category_rotate,
+                                                   scores=_fast_rcnn_score_rotate)
+
                 cv2.imwrite(cfgs.INFERENCE_SAVE_PATH + '/{}_horizontal_fpn.jpg'.format(i), img_horizontal_np)
+                cv2.imwrite(cfgs.INFERENCE_SAVE_PATH + '/{}_rotate_fpn.jpg'.format(i), img_rotate_np)
 
                 print('{}th image cost {}s'.format(i, (end - start)))
 

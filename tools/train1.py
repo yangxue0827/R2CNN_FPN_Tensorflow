@@ -14,7 +14,7 @@ from libs.networks.network_factory import get_flags_byname
 from libs.networks.network_factory import get_network_byname
 from libs.configs import cfgs
 from libs.rpn import build_rpn
-from libs.fast_rcnn import build_fast_rcnn
+from libs.fast_rcnn import build_fast_rcnn1
 from help_utils import tools
 from libs.box_utils.show_box_in_tensor import *
 from tools import restore_model
@@ -47,6 +47,9 @@ def train():
         with tf.name_scope('draw_gtboxes'):
             gtboxes_in_img = draw_box_with_color(img_batch, tf.reshape(gtboxes_and_label_minAreaRectangle, [-1, 5])[:, :-1],
                                                  text=tf.shape(gtboxes_and_label_minAreaRectangle)[0])
+
+            gtboxes_rotate_in_img = draw_box_with_color_rotate(img_batch, tf.reshape(gtboxes_and_label, [-1, 6])[:, :-1],
+                                                               text=tf.shape(gtboxes_and_label)[0])
 
         # ***********************************************************************************************
         # *                                         share net                                           *
@@ -102,38 +105,47 @@ def train():
         # *                                         Fast RCNN                                           *
         # ***********************************************************************************************
 
-        fast_rcnn = build_fast_rcnn.FastRCNN(feature_pyramid=rpn.feature_pyramid,
-                                             rpn_proposals_boxes=rpn_proposals_boxes,
-                                             rpn_proposals_scores=rpn_proposals_scores,
-                                             img_shape=tf.shape(img_batch),
-                                             roi_size=cfgs.ROI_SIZE,
-                                             roi_pool_kernel_size=cfgs.ROI_POOL_KERNEL_SIZE,
-                                             scale_factors=cfgs.SCALE_FACTORS,
-                                             gtboxes_and_label=gtboxes_and_label,
-                                             gtboxes_and_label_minAreaRectangle=gtboxes_and_label_minAreaRectangle,
-                                             fast_rcnn_nms_iou_threshold=cfgs.FAST_RCNN_NMS_IOU_THRESHOLD,
-                                             fast_rcnn_maximum_boxes_per_img=100,
-                                             fast_rcnn_nms_max_boxes_per_class=cfgs.FAST_RCNN_NMS_MAX_BOXES_PER_CLASS,
-                                             show_detections_score_threshold=cfgs.FINAL_SCORE_THRESHOLD,  # show detections which score >= 0.6
-                                             num_classes=cfgs.CLASS_NUM,
-                                             fast_rcnn_minibatch_size=cfgs.FAST_RCNN_MINIBATCH_SIZE,
-                                             fast_rcnn_positives_ratio=cfgs.FAST_RCNN_POSITIVE_RATE,
-                                             fast_rcnn_positives_iou_threshold=cfgs.FAST_RCNN_IOU_POSITIVE_THRESHOLD,  # iou>0.5 is positive, iou<0.5 is negative
-                                             use_dropout=cfgs.USE_DROPOUT,
-                                             weight_decay=cfgs.WEIGHT_DECAY[cfgs.NET_NAME],
-                                             is_training=True,
-                                             level=cfgs.LEVEL)
+        fast_rcnn = build_fast_rcnn1.FastRCNN(feature_pyramid=rpn.feature_pyramid,
+                                              rpn_proposals_boxes=rpn_proposals_boxes,
+                                              rpn_proposals_scores=rpn_proposals_scores,
+                                              img_shape=tf.shape(img_batch),
+                                              roi_size=cfgs.ROI_SIZE,
+                                              roi_pool_kernel_size=cfgs.ROI_POOL_KERNEL_SIZE,
+                                              scale_factors=cfgs.SCALE_FACTORS,
+                                              gtboxes_and_label=gtboxes_and_label,
+                                              gtboxes_and_label_minAreaRectangle=gtboxes_and_label_minAreaRectangle,
+                                              fast_rcnn_nms_iou_threshold=cfgs.FAST_RCNN_NMS_IOU_THRESHOLD,
+                                              fast_rcnn_maximum_boxes_per_img=100,
+                                              fast_rcnn_nms_max_boxes_per_class=cfgs.FAST_RCNN_NMS_MAX_BOXES_PER_CLASS,
+                                              show_detections_score_threshold=cfgs.FINAL_SCORE_THRESHOLD,  # show detections which score >= 0.6
+                                              num_classes=cfgs.CLASS_NUM,
+                                              fast_rcnn_minibatch_size=cfgs.FAST_RCNN_MINIBATCH_SIZE,
+                                              fast_rcnn_positives_ratio=cfgs.FAST_RCNN_POSITIVE_RATE,
+                                              fast_rcnn_positives_iou_threshold=cfgs.FAST_RCNN_IOU_POSITIVE_THRESHOLD,  # iou>0.5 is positive, iou<0.5 is negative
+                                              use_dropout=cfgs.USE_DROPOUT,
+                                              weight_decay=cfgs.WEIGHT_DECAY[cfgs.NET_NAME],
+                                              is_training=True,
+                                              level=cfgs.LEVEL)
 
-        fast_rcnn_decode_boxes, fast_rcnn_score, num_of_objects, detection_category = \
+        fast_rcnn_decode_boxes, fast_rcnn_score, num_of_objects, detection_category, \
+        fast_rcnn_decode_boxes_rotate, fast_rcnn_score_rotate, num_of_objects_rotate, detection_category_rotate = \
             fast_rcnn.fast_rcnn_predict()
-        fast_rcnn_location_loss, fast_rcnn_classification_loss = fast_rcnn.fast_rcnn_loss()
-        fast_rcnn_total_loss = fast_rcnn_location_loss + fast_rcnn_classification_loss
+        fast_rcnn_location_loss, fast_rcnn_classification_loss, \
+        fast_rcnn_location_rotate_loss, fast_rcnn_classification_rotate_loss = fast_rcnn.fast_rcnn_loss()
+
+        fast_rcnn_total_loss = fast_rcnn_location_loss + fast_rcnn_classification_loss + \
+                               fast_rcnn_location_rotate_loss + fast_rcnn_classification_rotate_loss
 
         with tf.name_scope('draw_boxes_with_categories'):
             fast_rcnn_predict_boxes_in_imgs = draw_boxes_with_categories(img_batch=img_batch,
                                                                          boxes=fast_rcnn_decode_boxes,
                                                                          labels=detection_category,
                                                                          scores=fast_rcnn_score)
+
+            fast_rcnn_predict_rotate_boxes_in_imgs = draw_boxes_with_categories_rotate(img_batch=img_batch,
+                                                                                       boxes=fast_rcnn_decode_boxes_rotate,
+                                                                                       labels=detection_category_rotate,
+                                                                                       scores=fast_rcnn_score_rotate)
 
         # train
         total_loss = slim.losses.get_total_loss()
@@ -154,7 +166,9 @@ def train():
         # ***********************************************************************************************
         # ground truth and predict
         tf.summary.image('img/gtboxes', gtboxes_in_img)
+        tf.summary.image('img/gtboxes_rotate', gtboxes_rotate_in_img)
         tf.summary.image('img/faster_rcnn_predict', fast_rcnn_predict_boxes_in_imgs)
+        tf.summary.image('img/faster_rcnn_predict_rotate', fast_rcnn_predict_rotate_boxes_in_imgs)
         # rpn loss and image
         tf.summary.scalar('rpn/rpn_location_loss', rpn_location_loss)
         tf.summary.scalar('rpn/rpn_classification_loss', rpn_classification_loss)
@@ -162,6 +176,8 @@ def train():
 
         tf.summary.scalar('fast_rcnn/fast_rcnn_location_loss', fast_rcnn_location_loss)
         tf.summary.scalar('fast_rcnn/fast_rcnn_classification_loss', fast_rcnn_classification_loss)
+        tf.summary.scalar('fast_rcnn/fast_rcnn_location_rotate_loss', fast_rcnn_location_rotate_loss)
+        tf.summary.scalar('fast_rcnn/fast_rcnn_classification_rotate_loss', fast_rcnn_classification_rotate_loss)
         tf.summary.scalar('fast_rcnn/fast_rcnn_total_loss', fast_rcnn_total_loss)
 
         tf.summary.scalar('loss/total_loss', total_loss)
@@ -197,20 +213,28 @@ def train():
 
                 _global_step, _img_name_batch, _rpn_location_loss, _rpn_classification_loss, \
                 _rpn_total_loss, _fast_rcnn_location_loss, _fast_rcnn_classification_loss, \
+                _fast_rcnn_location_rotate_loss, _fast_rcnn_classification_rotate_loss, \
                 _fast_rcnn_total_loss, _total_loss, _ = \
                     sess.run([global_step, img_name_batch, rpn_location_loss, rpn_classification_loss,
                               rpn_total_loss, fast_rcnn_location_loss, fast_rcnn_classification_loss,
+                              fast_rcnn_location_rotate_loss, fast_rcnn_classification_rotate_loss,
                               fast_rcnn_total_loss, total_loss, train_op])
+
                 end = time.time()
 
                 if step % 10 == 0:
+
                     print(""" {}: step{}    image_name:{} |\t
-                                rpn_loc_loss:{} |\t rpn_cla_loss:{} |\t rpn_total_loss:{} |
-                                fast_rcnn_loc_loss:{} |\t fast_rcnn_cla_loss:{} |\t fast_rcnn_total_loss:{} |
+                                rpn_loc_loss:{} |\t rpn_cla_loss:{} |\t
+                                rpn_total_loss:{} |
+                                fast_rcnn_loc_loss:{} |\t fast_rcnn_cla_loss:{} |\t
+                                fast_rcnn_loc_rotate_loss:{} |\t fast_rcnn_cla_rotate_loss:{} |\t
+                                fast_rcnn_total_loss:{} |\t
                                 total_loss:{} |\t pre_cost_time:{}s""" \
                           .format(training_time, _global_step, str(_img_name_batch[0]), _rpn_location_loss,
                                   _rpn_classification_loss, _rpn_total_loss, _fast_rcnn_location_loss,
-                                  _fast_rcnn_classification_loss, _fast_rcnn_total_loss, _total_loss,
+                                  _fast_rcnn_classification_loss, _fast_rcnn_location_rotate_loss,
+                                  _fast_rcnn_classification_rotate_loss,  _fast_rcnn_total_loss, _total_loss,
                                   (end - start)))
 
                 if step % 50 == 0:
@@ -234,33 +258,3 @@ def train():
 if __name__ == '__main__':
 
     train()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

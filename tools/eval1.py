@@ -19,7 +19,7 @@ from tools import restore_model
 import pickle
 from libs.box_utils.coordinate_convert import *
 from libs.box_utils.boxes_utils import get_horizen_minAreaRectangle
-from libs.fast_rcnn import build_fast_rcnn
+from libs.fast_rcnn import build_fast_rcnn1
 from libs.box_utils import iou_rotate
 
 os.environ["CUDA_VISIBLE_DEVICES"] = '1'
@@ -51,7 +51,7 @@ def make_dict_packle(_gtboxes_and_label, _fast_rcnn_decode_boxes, _fast_rcnn_sco
     return gtbox_list, predict_list
 
 
-def eval_ship(img_num):
+def eval_ship(img_num, mode):
     with tf.Graph().as_default():
 
         img_name_batch, img_batch, gtboxes_and_label_batch, num_objects_batch = \
@@ -111,31 +111,36 @@ def eval_ship(img_num):
         # ***********************************************************************************************
         # *                                         Fast RCNN                                           *
         # ***********************************************************************************************
-        fast_rcnn = build_fast_rcnn.FastRCNN(feature_pyramid=rpn.feature_pyramid,
-                                             rpn_proposals_boxes=rpn_proposals_boxes,
-                                             rpn_proposals_scores=rpn_proposals_scores,
-                                             img_shape=tf.shape(img_batch),
-                                             roi_size=cfgs.ROI_SIZE,
-                                             roi_pool_kernel_size=cfgs.ROI_POOL_KERNEL_SIZE,
-                                             scale_factors=cfgs.SCALE_FACTORS,
-                                             gtboxes_and_label=None,
-                                             gtboxes_and_label_minAreaRectangle=gtboxes_and_label_minAreaRectangle,
-                                             fast_rcnn_nms_iou_threshold=cfgs.FAST_RCNN_NMS_IOU_THRESHOLD,
-                                             fast_rcnn_maximum_boxes_per_img=100,
-                                             fast_rcnn_nms_max_boxes_per_class=cfgs.FAST_RCNN_NMS_MAX_BOXES_PER_CLASS,
-                                             show_detections_score_threshold=cfgs.FINAL_SCORE_THRESHOLD,
-                                             # show detections which score >= 0.6
-                                             num_classes=cfgs.CLASS_NUM,
-                                             fast_rcnn_minibatch_size=cfgs.FAST_RCNN_MINIBATCH_SIZE,
-                                             fast_rcnn_positives_ratio=cfgs.FAST_RCNN_POSITIVE_RATE,
-                                             fast_rcnn_positives_iou_threshold=cfgs.FAST_RCNN_IOU_POSITIVE_THRESHOLD,
-                                             # iou>0.5 is positive, iou<0.5 is negative
-                                             use_dropout=cfgs.USE_DROPOUT,
-                                             weight_decay=cfgs.WEIGHT_DECAY[cfgs.NET_NAME],
-                                             is_training=False,
-                                             level=cfgs.LEVEL)
+        fast_rcnn = build_fast_rcnn1.FastRCNN(feature_pyramid=rpn.feature_pyramid,
+                                              rpn_proposals_boxes=rpn_proposals_boxes,
+                                              rpn_proposals_scores=rpn_proposals_scores,
+                                              img_shape=tf.shape(img_batch),
+                                              roi_size=cfgs.ROI_SIZE,
+                                              roi_pool_kernel_size=cfgs.ROI_POOL_KERNEL_SIZE,
+                                              scale_factors=cfgs.SCALE_FACTORS,
+                                              gtboxes_and_label=None,
+                                              gtboxes_and_label_minAreaRectangle=gtboxes_and_label_minAreaRectangle,
+                                              fast_rcnn_nms_iou_threshold=cfgs.FAST_RCNN_NMS_IOU_THRESHOLD,
+                                              fast_rcnn_maximum_boxes_per_img=100,
+                                              fast_rcnn_nms_max_boxes_per_class=cfgs.FAST_RCNN_NMS_MAX_BOXES_PER_CLASS,
+                                              show_detections_score_threshold=cfgs.FINAL_SCORE_THRESHOLD,
+                                              # show detections which score >= 0.6
+                                              num_classes=cfgs.CLASS_NUM,
+                                              fast_rcnn_minibatch_size=cfgs.FAST_RCNN_MINIBATCH_SIZE,
+                                              fast_rcnn_positives_ratio=cfgs.FAST_RCNN_POSITIVE_RATE,
+                                              fast_rcnn_positives_iou_threshold=cfgs.FAST_RCNN_IOU_POSITIVE_THRESHOLD,
+                                              # iou>0.5 is positive, iou<0.5 is negative
+                                              use_dropout=cfgs.USE_DROPOUT,
+                                              weight_decay=cfgs.WEIGHT_DECAY[cfgs.NET_NAME],
+                                              is_training=False,
+                                              level=cfgs.LEVEL)
 
-        fast_rcnn_decode_boxes, fast_rcnn_score, num_of_objects, detection_category = fast_rcnn.fast_rcnn_predict()
+        fast_rcnn_decode_boxes, fast_rcnn_score, num_of_objects, detection_category, \
+        fast_rcnn_decode_boxes_rotate, fast_rcnn_score_rotate, num_of_objects_rotate, detection_category_rotate = \
+            fast_rcnn.fast_rcnn_predict()
+
+        if mode == 0:
+            fast_rcnn_decode_boxes_rotate = get_horizen_minAreaRectangle(fast_rcnn_decode_boxes_rotate, False)
 
         # train
         init_op = tf.group(
@@ -155,36 +160,59 @@ def eval_ship(img_num):
 
             gtboxes_horizontal_dict = {}
             predict_horizontal_dict = {}
+            gtboxes_rotate_dict = {}
+            predict_rotate_dict = {}
 
             for i in range(img_num):
 
                 start = time.time()
 
                 _img_name_batch, _img_batch, _gtboxes_and_label, _gtboxes_and_label_minAreaRectangle, \
-                _fast_rcnn_decode_boxes, _fast_rcnn_score, _detection_category \
+                _fast_rcnn_decode_boxes, _fast_rcnn_score, _detection_category, _fast_rcnn_decode_boxes_rotate, \
+                _fast_rcnn_score_rotate, _detection_category_rotate \
                     = sess.run([img_name_batch, img_batch, gtboxes_and_label, gtboxes_and_label_minAreaRectangle,
-                                fast_rcnn_decode_boxes, fast_rcnn_score, detection_category])
+                                fast_rcnn_decode_boxes, fast_rcnn_score, detection_category, fast_rcnn_decode_boxes_rotate,
+                                fast_rcnn_score_rotate, detection_category_rotate])
                 end = time.time()
 
                 # gtboxes convert dict
                 gtboxes_horizontal_dict[str(_img_name_batch[0])] = []
                 predict_horizontal_dict[str(_img_name_batch[0])] = []
+                gtboxes_rotate_dict[str(_img_name_batch[0])] = []
+                predict_rotate_dict[str(_img_name_batch[0])] = []
 
                 gtbox_horizontal_list, predict_horizontal_list = \
                     make_dict_packle(_gtboxes_and_label_minAreaRectangle, _fast_rcnn_decode_boxes,
                                      _fast_rcnn_score, _detection_category)
 
+                if mode == 0:
+                    gtbox_rotate_list, predict_rotate_list = \
+                        make_dict_packle(_gtboxes_and_label_minAreaRectangle, _fast_rcnn_decode_boxes_rotate,
+                                         _fast_rcnn_score_rotate, _detection_category_rotate)
+                else:
+                    gtbox_rotate_list, predict_rotate_list = \
+                        make_dict_packle(_gtboxes_and_label, _fast_rcnn_decode_boxes_rotate,
+                                         _fast_rcnn_score_rotate, _detection_category_rotate)
+
                 gtboxes_horizontal_dict[str(_img_name_batch[0])].extend(gtbox_horizontal_list)
                 predict_horizontal_dict[str(_img_name_batch[0])].extend(predict_horizontal_list)
+                gtboxes_rotate_dict[str(_img_name_batch[0])].extend(gtbox_rotate_list)
+                predict_rotate_dict[str(_img_name_batch[0])].extend(predict_rotate_list)
 
                 view_bar('{} image cost {}s'.format(str(_img_name_batch[0]), (end - start)), i + 1, img_num)
 
             fw1 = open('gtboxes_horizontal_dict.pkl', 'w')
             fw2 = open('predict_horizontal_dict.pkl', 'w')
+            fw3 = open('gtboxes_rotate_dict.pkl', 'w')
+            fw4 = open('predict_rotate_dict.pkl', 'w')
             pickle.dump(gtboxes_horizontal_dict, fw1)
             pickle.dump(predict_horizontal_dict, fw2)
+            pickle.dump(gtboxes_rotate_dict, fw3)
+            pickle.dump(predict_rotate_dict, fw4)
             fw1.close()
             fw2.close()
+            fw3.close()
+            fw4.close()
             coord.request_stop()
             coord.join(threads)
 
@@ -223,7 +251,7 @@ def voc_ap(rec, prec, use_07_metric=False):
     return ap
 
 
-def eval(rboxes, gboxes, iou_th, use_07_metric):
+def eval(rboxes, gboxes, iou_th, use_07_metric, mode):
     rbox_images = rboxes.keys()
     fp = np.zeros(len(rbox_images))
     tp = np.zeros(len(rbox_images))
@@ -243,18 +271,21 @@ def eval(rboxes, gboxes, iou_th, use_07_metric):
 
                 rbox_lists = rbox_lists[box_index, :]
                 for rbox_list in rbox_lists:
-                    ixmin = np.maximum(gbox_list[:, 0], rbox_list[0])
-                    iymin = np.maximum(gbox_list[:, 1], rbox_list[1])
-                    ixmax = np.minimum(gbox_list[:, 2], rbox_list[2])
-                    iymax = np.minimum(gbox_list[:, 3], rbox_list[3])
-                    iw = np.maximum(ixmax - ixmin + 1., 0.)
-                    ih = np.maximum(iymax - iymin + 1., 0.)
-                    inters = iw * ih
-                    # union
-                    uni = ((rbox_list[2] - rbox_list[0] + 1.) * (rbox_list[3] - rbox_list[1] + 1.) +
-                           (gbox_list[:, 2] - gbox_list[:, 0] + 1.) *
-                           (gbox_list[:, 3] - gbox_list[:, 1] + 1.) - inters)
-                    overlaps = inters / uni
+                    if mode == 0:
+                        ixmin = np.maximum(gbox_list[:, 0], rbox_list[0])
+                        iymin = np.maximum(gbox_list[:, 1], rbox_list[1])
+                        ixmax = np.minimum(gbox_list[:, 2], rbox_list[2])
+                        iymax = np.minimum(gbox_list[:, 3], rbox_list[3])
+                        iw = np.maximum(ixmax - ixmin + 1., 0.)
+                        ih = np.maximum(iymax - iymin + 1., 0.)
+                        inters = iw * ih
+                        # union
+                        uni = ((rbox_list[2] - rbox_list[0] + 1.) * (rbox_list[3] - rbox_list[1] + 1.) +
+                               (gbox_list[:, 2] - gbox_list[:, 0] + 1.) *
+                               (gbox_list[:, 3] - gbox_list[:, 1] + 1.) - inters)
+                        overlaps = inters / uni
+                    else:
+                        overlaps = iou_rotate.iou_rotate_calculate1(np.array([rbox_list[:-1]]), gbox_list, use_gpu=False)[0]
 
                     ovmax = np.max(overlaps)
                     jmax = np.argmax(overlaps)
@@ -293,28 +324,44 @@ def eval(rboxes, gboxes, iou_th, use_07_metric):
 
 if __name__ == '__main__':
     img_num = 1000
+    # 0: horizontal standard 1: rotate standard
     mode = 0
-    eval_ship(img_num)
+    eval_ship(img_num, mode)
 
     fr1 = open('gtboxes_horizontal_dict.pkl', 'r')
     fr2 = open('predict_horizontal_dict.pkl', 'r')
+    fr3 = open('gtboxes_rotate_dict.pkl', 'r')
+    fr4 = open('predict_rotate_dict.pkl', 'r')
     gtboxes_horizontal_dict = pickle.load(fr1)
     predict_horizontal_dict = pickle.load(fr2)
+    gtboxes_rotate_dict = pickle.load(fr3)
+    predict_rotate_dict = pickle.load(fr4)
 
-    rec, prec, ap = eval(predict_horizontal_dict, gtboxes_horizontal_dict, 0.5, False)
+    rec, prec, ap = eval(predict_horizontal_dict, gtboxes_horizontal_dict, 0.5, False, mode=0)
+    rec1, prec1, ap1 = eval(predict_rotate_dict, gtboxes_rotate_dict, 0.5, False, mode=mode)
 
     recall = rec[-1]
+    recall1 = rec1[-1]
     precision = prec[-1]
+    precision1 = prec1[-1]
     mAP = ap
+    mAP1 = ap1
     F_measure = (2*precision*recall)/(recall+precision)
+    F_measure1 = (2*precision1*recall1)/(recall1+precision1)
     print('\n*********horizontal eval*********')
     print('R:', recall)
     print('P:', precision)
     print('mAP:', mAP)
     print('F:', F_measure)
+    print('***********rotate eval***********')
+    print('R:', recall1)
+    print('P:', precision1)
+    print('mAP:', mAP1)
+    print('F:', F_measure1)
     fr1.close()
     fr2.close()
-
+    fr3.close()
+    fr4.close()
 
 
 
