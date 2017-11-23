@@ -1,4 +1,4 @@
-# The code is being sorted out and the complete code and instructions are will uploaded soon.
+# The code is being sorted out and the complete code and instructions are will uploaded soon.Stay tuned.
 # Test results   
 ![01](tools/test_result/07_horizontal_gt.jpg)   
 ![02](tools/test_result/07_horizontal_fpn.jpg)   
