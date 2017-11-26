@@ -1,7 +1,7 @@
 # The code is being sorted out and the complete code and instructions are will uploaded soon.Stay tuned.
 
 A Tensorflow implementation of FPN or R2CNN detection framework based on FPN . 
-The paper references [R2CNN Rotational Region CNN for Orientation Robust Scene Text Detection](https://arxiv.org/abs/1706.09579)
+The paper references [R2CNN Rotational Region CNN for Orientation Robust Scene Text Detection](https://arxiv.org/abs/1706.09579) or [Feature Pyramid Networks for Object Detection](https://arxiv.org/abs/1612.03144)
 
 # Configuration Environment
 ubuntu + python2 + tensorflow1.2 + cv2 + cuda8.0 + GeForce GTX 1080     
