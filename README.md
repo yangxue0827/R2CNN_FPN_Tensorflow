@@ -24,9 +24,11 @@ python ./data/io/convert_data_to_tfrecord.py --VOC_dir='***/VOCdevkit/VOCdevkit/
 # Train
 1、Configure parameters in ./libs/config/cfgs.py and modify the project's root directory    
 2、Modify ./libs/lable_name_dict.py, corresponding to the number of categories in the configuration file   
-3、If you want to train FPN:        
->python ./tools/train.py       
-  elif you want to train R2CNN:     
+3、Choose a model(FPN and R2CNN) 
+If you want to train FPN:        
+>python ./tools/train.py
+
+elif you want to train R2CNN:     
 >python ./tools/train1.py
 
 # Test tfrecord 
