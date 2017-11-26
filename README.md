@@ -3,25 +3,14 @@
 A Tensorflow implementation of R2CNN detection framework. The paper [references R2CNN Rotational Region CNN for Orientation Robust Scene Text Detection](https://arxiv.org/abs/1706.09579)
 
 # Configuration Environment
-ubuntu + python2 + tensorflow1.2 + cv2 + cuda8.0 + GeForce GTX 1080
-If you want to use cpu, you need to modify the parameters of NMS and IOU functions use_gpu = False
-You can also use docker environment, command: yangxue2docker/tensorflow3_gpu_cv2_sshd:v1.0
-
-# Test results   
-![01](tools/test_result/07_horizontal_gt.jpg)   
-![02](tools/test_result/07_horizontal_fpn.jpg)   
-![03](tools/test_result/07_rotate_gt.jpg)   
-![04](tools/test_result/07_rotate_fpn.jpg)  
-
-![05](tools/test_result/08_horizontal_gt.jpg)    
-![06](tools/test_result/08_horizontal_fpn.jpg)    
-![07](tools/test_result/08_rotate_gt.jpg)    
-![08](tools/test_result/08_rotate_fpn.jpg)    
+ubuntu + python2 + tensorflow1.2 + cv2 + cuda8.0 + GeForce GTX 1080     
+If you want to use cpu, you need to modify the parameters of NMS and IOU functions use_gpu = False    
+You can also use docker environment, command: yangxue2docker/tensorflow3_gpu_cv2_sshd:v1.0     
 
 # Make tfrecord    
 data path format  
 VOCdevkit  
->VOCdevkit  
+>VOCdevkit_train  
 >>Annotation  
 >>JPEGImages   
 
@@ -33,20 +22,31 @@ python ./data/io/convert_data_to_tfrecord.py --VOC_dir='***/VOCdevkit/VOCdevkit/
 
 
 # Train
-1、Configure parameters in ./libs/config/cfgs.py and modify the project's root directory
+1、Configure parameters in ./libs/config/cfgs.py and modify the project's root directory    
 2、Modify ./libs/lable_name_dict.py, corresponding to the number of categories in the configuration file   
 3、If you want to train FPN:        
-     python ./tools/train.py       
+>python ./tools/train.py       
   elif you want to train R2CNN:     
-  	 python ./tools/train1.py
+>python ./tools/train1.py
 
 # Test tfrecord 
-mkdir test_result
+mkdir test_result    
 python ./tools/test.py(test1.py)   
 
 # Test images  
-put images in ./tools/inference_image, and mkdir inference_result
+put images in ./tools/inference_image, and mkdir inference_result    
 python ./tools/inference.py(inference1.py)   
 
 # eval   
 python ./tools/eval.py(eval1.py)
+
+# Test results   
+![01](tools/test_result/07_horizontal_gt.jpg)   
+![02](tools/test_result/07_horizontal_fpn.jpg)   
+![03](tools/test_result/07_rotate_gt.jpg)   
+![04](tools/test_result/07_rotate_fpn.jpg)  
+
+![05](tools/test_result/08_horizontal_gt.jpg)    
+![06](tools/test_result/08_horizontal_fpn.jpg)    
+![07](tools/test_result/08_rotate_gt.jpg)    
+![08](tools/test_result/08_rotate_fpn.jpg)    
