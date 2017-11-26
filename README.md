@@ -5,7 +5,7 @@ A Tensorflow implementation of R2CNN detection framework based on FPN. The paper
 # Configuration Environment
 ubuntu + python2 + tensorflow1.2 + cv2 + cuda8.0 + GeForce GTX 1080     
 If you want to use cpu, you need to modify the parameters of NMS and IOU functions use_gpu = False    
-You can also use docker environment, command: yangxue2docker/tensorflow3_gpu_cv2_sshd:v1.0     
+You can also use docker environment, command: docker push yangxue2docker/tensorflow3_gpu_cv2_sshd:v1.0     
 
 # Make tfrecord    
 data path format  
