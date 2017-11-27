@@ -8,7 +8,8 @@ ubuntu + python2 + tensorflow1.2 + cv2 + cuda8.0 + GeForce GTX 1080
 If you want to use cpu, you need to modify the parameters of NMS and IOU functions use_gpu = False    
 You can also use docker environment, command: docker push yangxue2docker/tensorflow3_gpu_cv2_sshd:v1.0     
 
-# Make tfrecord    
+# Make tfrecord   
+The data is VOC format, reference [here](sample.xml)     
 data path format  
 VOCdevkit  
 >VOCdevkit_train  
@@ -33,8 +34,7 @@ If you want to train FPN:
 elif you want to train R2CNN:     
 >python ./tools/train1.py
 
-# Test tfrecord 
-The data is VOC format, reference [here](sample.xml)      
+# Test tfrecord     
 mkdir test_result    
 python ./tools/test.py(test1.py)   
 
