@@ -34,6 +34,7 @@ elif you want to train R2CNN:
 >python ./tools/train1.py
 
 # Test tfrecord 
+The data is VOC format, reference [here](sample.xml)      
 mkdir test_result    
 python ./tools/test.py(test1.py)   
 
