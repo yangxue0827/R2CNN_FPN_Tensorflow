@@ -57,14 +57,15 @@ def draw_box_cv(img, boxes, labels, scores):
                           pt2=(xmax, ymax),
                           color=color,
                           thickness=2)
-            cv2.rectangle(img,
-                          pt1=(xmin, ymin),
-                          pt2=(xmin+120, ymin+15),
-                          color=color,
-                          thickness=-1)
+
             category = LABEl_NAME_MAP[label]
 
             if scores is not None:
+                cv2.rectangle(img,
+                              pt1=(xmin, ymin),
+                              pt2=(xmin+150, ymin+15),
+                              color=color,
+                              thickness=-1)
                 cv2.putText(img,
                             text=category+": "+str(scores[i]),
                             org=(xmin, ymin+10),
@@ -73,6 +74,11 @@ def draw_box_cv(img, boxes, labels, scores):
                             thickness=2,
                             color=(color[1], color[2], color[0]))
             else:
+                cv2.rectangle(img,
+                              pt1=(xmin, ymin),
+                              pt2=(xmin + 40, ymin + 15),
+                              color=color,
+                              thickness=-1)
                 cv2.putText(img,
                             text=category,
                             org=(xmin, ymin + 10),
@@ -109,14 +115,14 @@ def draw_rotate_box_cv(img, boxes, labels, scores):
             rect = np.int0(rect)
             cv2.drawContours(img, [rect], -1, color, 3)
 
-            cv2.rectangle(img,
-                          pt1=(x_c, y_c),
-                          pt2=(x_c+120, y_c+15),
-                          color=color,
-                          thickness=-1)
             category = LABEl_NAME_MAP[label]
 
             if scores is not None:
+                cv2.rectangle(img,
+                              pt1=(x_c, y_c),
+                              pt2=(x_c + 120, y_c + 15),
+                              color=color,
+                              thickness=-1)
                 cv2.putText(img,
                             text=category+": "+str(scores[i]),
                             org=(x_c, y_c+10),
@@ -125,6 +131,11 @@ def draw_rotate_box_cv(img, boxes, labels, scores):
                             thickness=2,
                             color=(color[1], color[2], color[0]))
             else:
+                cv2.rectangle(img,
+                              pt1=(x_c, y_c),
+                              pt2=(x_c + 40, y_c + 15),
+                              color=color,
+                              thickness=-1)
                 cv2.putText(img,
                             text=category,
                             org=(x_c, y_c + 10),
