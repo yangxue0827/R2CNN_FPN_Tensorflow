@@ -26,7 +26,7 @@ python ./data/io/convert_data_to_tfrecord.py --VOC_dir='***/VOCdevkit/VOCdevkit_
 # Train
 1、Configure parameters in ./libs/configs/cfgs.py and modify the project's root directory    
 2、Modify ./libs/lable_name_dict.py, corresponding to the number of categories in the configuration file    
-3、download pretrain weight(resnet_v1_101_2016_08_28.tar.gz or resnet_v1_50_2016_08_28.tar.gz) from [here](https://github.com/yangxue0827/models/tree/master/slim), then extract to folder ./data/pretrained_weights    
+3、download pretrain weight([resnet_v1_101_2016_08_28.tar.gz](http://download.tensorflow.org/models/resnet_v1_101_2016_08_28.tar.gz) or [resnet_v1_50_2016_08_28.tar.gz](http://download.tensorflow.org/models/resnet_v1_50_2016_08_28.tar.gz)) from [here](https://github.com/yangxue0827/models/tree/master/slim), then extract to folder ./data/pretrained_weights    
 4、Choose a model(FPN and R2CNN)     
 If you want to train FPN:        
 >python ./tools/train.py
