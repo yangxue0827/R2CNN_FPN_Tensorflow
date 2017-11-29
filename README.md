@@ -46,15 +46,21 @@ python ./tools/inference.py(inference1.py)
 python ./tools/eval.py(eval1.py)
 
 # Summary   
-tensorboard ---logdir=./output/summary/
+tensorboard --logdir=./output/summary/   
+![01](output/summary/fast_rcnn_loss.bmp) 
+![02](output/summary/rpn_loss.bmp) 
+![03](output/summary/total_loss.bmp) 
+![04](graph.bmp) 
 
 # Test results   
-![01](tools/test_result/07_horizontal_gt.jpg)   
-![02](tools/test_result/07_horizontal_fpn.jpg)   
-![03](tools/test_result/07_rotate_gt.jpg)   
-![04](tools/test_result/07_rotate_fpn.jpg)  
+![11](tools/test_result/07_horizontal_gt.jpg)   
+![12](tools/test_result/07_horizontal_fpn.jpg)   
+     
+![13](tools/test_result/07_rotate_gt.jpg)   
+![14](tools/test_result/07_rotate_fpn.jpg)  
 
-![05](tools/test_result/08_horizontal_gt.jpg)    
-![06](tools/test_result/08_horizontal_fpn.jpg)    
-![07](tools/test_result/08_rotate_gt.jpg)    
-![08](tools/test_result/08_rotate_fpn.jpg)    
+![15](tools/test_result/08_horizontal_gt.jpg)    
+![16](tools/test_result/08_horizontal_fpn.jpg)   
+     
+![17](tools/test_result/08_rotate_gt.jpg)    
+![18](tools/test_result/08_rotate_fpn.jpg)     
