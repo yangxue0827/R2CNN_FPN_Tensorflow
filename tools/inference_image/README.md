@@ -1,1 +1,0 @@
-# Test images stored here.
