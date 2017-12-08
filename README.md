@@ -26,8 +26,9 @@ VOCdevkit
 python ./data/io/convert_data_to_tfrecord.py --VOC_dir='***/VOCdevkit/VOCdevkit_train/' --save_name='train' --img_format='.jpg' --dataset='ship'
 
 # Demo     
-put images in ./tools/inference_image    
-python ./tools/inference.py(inference1.py)  
+1、Unzip the weight ./output/res101_trained_weights/*.rar   
+2、put images in ./tools/inference_image  
+3、python ./tools/inference.py   
 
 # Train
 1、Configure parameters in ./libs/configs/cfgs.py and modify the project's root directory    
