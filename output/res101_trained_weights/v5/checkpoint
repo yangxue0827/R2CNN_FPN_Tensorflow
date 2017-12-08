@@ -1,2 +1,0 @@
-model_checkpoint_path: "voc_40000model.ckpt"
-all_model_checkpoint_paths: "voc_40000model.ckpt"
