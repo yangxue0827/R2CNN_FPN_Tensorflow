@@ -68,7 +68,7 @@ def train():
                             inputs=img_batch,
                             gtboxes_and_label=gtboxes_and_label_minAreaRectangle,
                             is_training=True,
-                            share_head=False,
+                            share_head=cfgs.SHARE_HEAD,
                             share_net=share_net,
                             stride=cfgs.STRIDE,
                             anchor_ratios=cfgs.ANCHOR_RATIOS,
