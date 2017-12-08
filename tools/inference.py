@@ -20,8 +20,11 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 
 def get_imgs():
+    mkdir(cfgs.INFERENCE_IMAGE_PATH)
     root_dir = cfgs.INFERENCE_IMAGE_PATH
     img_name_list = os.listdir(root_dir)
+    if len(img_name_list) == 0:
+        assert 'no test image in {}!'.format(cfgs.INFERENCE_IMAGE_PATH)
     img_list = [cv2.imread(os.path.join(root_dir, img_name))
                 for img_name in img_name_list]
     return img_list
