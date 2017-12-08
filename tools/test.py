@@ -13,7 +13,7 @@ import time
 from data.io.read_tfrecord import next_batch
 from libs.configs import cfgs
 from libs.networks.network_factory import get_network_byname
-from help_utils.tools import view_bar
+from help_utils.tools import *
 from libs.rpn import build_rpn
 import cv2
 from help_utils import help_utils
@@ -144,7 +144,7 @@ def test(img_num):
                                                                   boxes=_fast_rcnn_decode_boxes,
                                                                   labels=_detection_category,
                                                                   scores=_fast_rcnn_score)
-
+                mkdir(cfgs.TEST_SAVE_PATH)
                 cv2.imwrite(cfgs.TEST_SAVE_PATH + '/{}_horizontal_fpn.jpg'.format(str(_img_name_batch[0])), _img_batch_fpn_horizonal)
 
                 temp_label_horizontal = np.reshape(_gtboxes_and_label[:, -1:], [-1, ]).astype(np.int64)

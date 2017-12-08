@@ -10,4 +10,4 @@ VOCdevkit
 >>Annotation   
 >>JPEGImages   
 
-python ./data/io/convert_data_to_tfrecord.py --VOC_dir='***/VOCdevkit/VOCdevkit_train/' --save_name='train' --img_format='.jpg' --dataset='ship'
+python ./data/io/convert_data_to_tfrecord.py --VOC_dir='***/VOCdevkit/VOCdevkit_train/' --save_name='train' --img_format='.tif' --dataset='ship'

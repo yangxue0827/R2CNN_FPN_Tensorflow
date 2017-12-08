@@ -7,7 +7,6 @@ import sys
 sys.path.append('../')
 
 import tensorflow.contrib.slim as slim
-import os
 import time
 from data.io.read_tfrecord import next_batch
 from libs.networks.network_factory import get_flags_byname
@@ -15,7 +14,7 @@ from libs.networks.network_factory import get_network_byname
 from libs.configs import cfgs
 from libs.rpn import build_rpn
 from libs.fast_rcnn import build_fast_rcnn1
-from help_utils import tools
+from help_utils.tools import *
 from libs.box_utils.show_box_in_tensor import *
 from tools import restore_model
 from libs.box_utils.coordinate_convert import back_forward_convert
@@ -154,7 +153,7 @@ def train():
 
         lr = tf.train.piecewise_constant(global_step,
                                          boundaries=[np.int64(20000), np.int64(40000)],
-                                         values=[0.001, 0.0001, 0.00001])
+                                         values=[cfgs.LR, cfgs.LR/10, cfgs.LR/100])
         tf.summary.scalar('lr', lr)
         optimizer = tf.train.MomentumOptimizer(lr, momentum=cfgs.MOMENTUM)
 
@@ -203,8 +202,8 @@ def train():
             coord = tf.train.Coordinator()
             threads = tf.train.start_queue_runners(sess, coord)
 
-            summary_path = os.path.join(cfgs.SUMMARY_PATH, cfgs.VERSION)
-            tools.mkdir(summary_path)
+            summary_path = os.path.join(FLAGS.summary_path, cfgs.VERSION)
+            mkdir(summary_path)
             summary_writer = tf.summary.FileWriter(summary_path, graph=sess.graph)
 
             for step in range(cfgs.MAX_ITERATION):
@@ -244,8 +243,7 @@ def train():
 
                 if (step > 0 and step % 1000 == 0) or (step == cfgs.MAX_ITERATION - 1):
                     save_dir = os.path.join(FLAGS.trained_checkpoint, cfgs.VERSION)
-                    if not os.path.exists(save_dir):
-                        os.mkdir(save_dir)
+                    mkdir(save_dir)
 
                     save_ckpt = os.path.join(save_dir, 'voc_'+str(_global_step)+'model.ckpt')
                     saver.save(sess, save_ckpt)

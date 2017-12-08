@@ -13,7 +13,7 @@ import time
 from data.io.read_tfrecord import next_batch
 from libs.configs import cfgs
 from libs.networks.network_factory import get_network_byname
-from help_utils.tools import view_bar
+from help_utils.tools import *
 from libs.rpn import build_rpn
 import cv2
 from help_utils import help_utils
@@ -153,7 +153,7 @@ def test(img_num):
                                                                       boxes=_fast_rcnn_decode_boxes_rotate,
                                                                       labels=_detection_category_rotate,
                                                                       scores=_fast_rcnn_score_rotate)
-
+                mkdir(cfgs.TEST_SAVE_PATH)
                 cv2.imwrite(cfgs.TEST_SAVE_PATH + '/{}_horizontal_fpn.jpg'.format(str(_img_name_batch[0])), _img_batch_fpn_horizonal)
                 cv2.imwrite(cfgs.TEST_SAVE_PATH + '/{}_rotate_fpn.jpg'.format(str(_img_name_batch[0])), _img_batch_fpn_rotate)
 

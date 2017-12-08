@@ -6,12 +6,12 @@ from __future__ import division
 import sys
 sys.path.append('../')
 
-import os
 import time
 from data.io import image_preprocess
 from libs.networks.network_factory import get_network_byname
 from libs.rpn import build_rpn
 from help_utils.help_utils import *
+from help_utils.tools import *
 from libs.configs import cfgs
 from tools import restore_model
 from libs.fast_rcnn import build_fast_rcnn
@@ -134,7 +134,7 @@ def inference():
                                                 boxes=_fast_rcnn_decode_boxes,
                                                 labels=_detection_category,
                                                 scores=_fast_rcnn_score)
-
+                mkdir(cfgs.INFERENCE_SAVE_PATH)
                 cv2.imwrite(cfgs.INFERENCE_SAVE_PATH + '/{}_horizontal_fpn.jpg'.format(i), img_horizontal_np)
 
                 print('{}th image cost {}s'.format(i, (end - start)))
