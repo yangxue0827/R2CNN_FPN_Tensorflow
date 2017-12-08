@@ -284,7 +284,9 @@ def eval(rboxes, gboxes, iou_th, use_07_metric, mode):
                                (gbox_list[:, 3] - gbox_list[:, 1] + 1.) - inters)
                         overlaps = inters / uni
                     else:
-                        overlaps = iou_rotate.iou_rotate_calculate1(np.array([rbox_list[:-1]]), gbox_list, use_gpu=False)[0]
+                        overlaps = iou_rotate.iou_rotate_calculate1(np.array([rbox_list[:-1]]),
+                                                                    gbox_list,
+                                                                    use_gpu=False)[0]
 
                     ovmax = np.max(overlaps)
                     jmax = np.argmax(overlaps)
@@ -322,7 +324,7 @@ def eval(rboxes, gboxes, iou_th, use_07_metric, mode):
 
 
 if __name__ == '__main__':
-    img_num = 1000
+    img_num = 1
     # 0: horizontal standard 1: rotate standard
     mode = 0
     eval_ship(img_num, mode)
