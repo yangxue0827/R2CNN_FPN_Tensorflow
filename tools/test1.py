@@ -8,7 +8,6 @@ sys.path.append('../')
 
 import tensorflow as tf
 import numpy as np
-import os
 import time
 from data.io.read_tfrecord import next_batch
 from libs.configs import cfgs
