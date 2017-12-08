@@ -47,10 +47,10 @@ python ./tools/test.py(test1.py)
 python ./tools/eval.py(eval1.py)
 
 # Summary   
-tensorboard --logdir=./output/summary/   
-![01](output/summary/fast_rcnn_loss.bmp) 
-![02](output/summary/rpn_loss.bmp) 
-![03](output/summary/total_loss.bmp) 
+tensorboard --logdir=./output/res101_summary/   
+![01](output/res101_summary/fast_rcnn_loss.bmp) 
+![02](output/res101_summary/rpn_loss.bmp) 
+![03](output/res101_summary/total_loss.bmp) 
 
 # Graph
 ![04](graph.png) 
