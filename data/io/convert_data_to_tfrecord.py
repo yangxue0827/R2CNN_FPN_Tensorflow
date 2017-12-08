@@ -8,7 +8,7 @@ import numpy as np
 import tensorflow as tf
 import glob
 import cv2
-from libs.label_name_dict.remote_sensing_dict import *
+from libs.label_name_dict.label_dict import *
 from help_utils.tools import *
 
 tf.app.flags.DEFINE_string('VOC_dir', None, 'Voc dir')

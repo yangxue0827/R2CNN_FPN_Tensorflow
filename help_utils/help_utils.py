@@ -3,7 +3,7 @@
 import tensorflow as tf
 import numpy as np
 import cv2
-from libs.label_name_dict.remote_sensing_dict import LABEl_NAME_MAP
+from libs.label_name_dict.label_dict import LABEl_NAME_MAP
 
 
 def show_boxes_in_img(img, boxes_and_label):
