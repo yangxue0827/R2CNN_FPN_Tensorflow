@@ -116,8 +116,8 @@ def inference():
         restorer, restore_ckpt = restore_model.get_restorer()
 
         config = tf.ConfigProto()
-        # config.gpu_option.per_process_gpu_memory_fraction = 0.5
-        config.gpu_option.allow_growth = True
+        # config.gpu_options.per_process_gpu_memory_fraction = 0.5
+        config.gpu_options.allow_growth = True
         with tf.Session(config=config) as sess:
             sess.run(init_op)
             if not restorer is None:
