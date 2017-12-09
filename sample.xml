@@ -1,15 +1,15 @@
 <annotation>
     <folder>xxx</folder>
-    <filename>圣迭戈海军基地油库_2001-07-21%15300%8000.tif</filename>
+    <filename>sample.tif</filename>
     <source>
         <database>xxxx</database>
-        <annotation>IECAS</annotation>
-        <image>IECAS</image>
+        <annotation>xxxx</annotation>
+        <image>xxxx</image>
         <flickrid>0</flickrid>
     </source>
     <owner>
-        <flickrid>IECAS</flickrid>
-        <name>IECAS</name>
+        <flickrid>xxxx</flickrid>
+        <name>xxxx</name>
     </owner>
     <size>
         <width>1000</width>
