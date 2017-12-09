@@ -194,7 +194,11 @@ def train():
 
         restorer, restore_ckpt = restore_model.get_restorer()
         saver = tf.train.Saver(max_to_keep=10)
-        with tf.Session() as sess:
+
+        config = tf.ConfigProto()
+        # config.gpu_option.per_process_gpu_memory_fraction = 0.5
+        config.gpu_option.allow_growth = True
+        with tf.Session(config=config) as sess:
             sess.run(init_op)
             if not restorer is None:
                 restorer.restore(sess, restore_ckpt)
