@@ -27,7 +27,7 @@ def get_imgs():
         assert 'no test image in {}!'.format(cfgs.INFERENCE_IMAGE_PATH)
     img_list = [cv2.imread(os.path.join(root_dir, img_name))
                 for img_name in img_name_list]
-    return img_list
+    return img_list, img_name_list
 
 
 def inference():
@@ -127,7 +127,8 @@ def inference():
             coord = tf.train.Coordinator()
             threads = tf.train.start_queue_runners(sess, coord)
 
-            for i, img in enumerate(get_imgs()):
+            imgs, img_names = get_imgs()
+            for i, img in enumerate(imgs):
 
                 start = time.time()
 
@@ -150,11 +151,9 @@ def inference():
                                                    labels=_detection_category_rotate,
                                                    scores=_fast_rcnn_score_rotate)
                 mkdir(cfgs.INFERENCE_SAVE_PATH)
-                cv2.imwrite(cfgs.INFERENCE_SAVE_PATH + '/{}_horizontal_fpn.jpg'.format(i), img_horizontal_np)
-                cv2.imwrite(cfgs.INFERENCE_SAVE_PATH + '/{}_rotate_fpn.jpg'.format(i), img_rotate_np)
-
-                print('{}th image cost {}s'.format(i, (end - start)))
-
+                cv2.imwrite(cfgs.INFERENCE_SAVE_PATH + '/{}_horizontal_fpn.jpg'.format(img_names[i]), img_horizontal_np)
+                cv2.imwrite(cfgs.INFERENCE_SAVE_PATH + '/{}_rotate_fpn.jpg'.format(img_names[i]), img_rotate_np)
+                view_bar('{} cost {}s'.format(img_names[i], (end - start)), i + 1, len(imgs))
             coord.request_stop()
             coord.join(threads)
 
