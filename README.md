@@ -29,7 +29,7 @@ python ./data/io/convert_data_to_tfrecord.py --VOC_dir='***/VOCdevkit/VOCdevkit_
 1、Unzip the weight ./output/res101_trained_weights/*.rar   
 2、put images in ./tools/inference_image  
 3、python ./tools/inference1.py          
-If you want to test [FPN](https://github.com/yangxue0827/FPN_Tensorflow). :        
+If you want to test [FPN](https://github.com/yangxue0827/FPN_Tensorflow) :        
 >python ./tools/inference.py
 
 elif you want to test R2CNN:     
@@ -39,8 +39,8 @@ elif you want to test R2CNN:
 1、Configure parameters in ./libs/configs/cfgs.py and modify the project's root directory    
 2、Modify ./libs/lable_name_dict/***_dict.py, corresponding to the number of categories in the configuration file    
 3、download pretrain weight([resnet_v1_101_2016_08_28.tar.gz](http://download.tensorflow.org/models/resnet_v1_101_2016_08_28.tar.gz) or [resnet_v1_50_2016_08_28.tar.gz](http://download.tensorflow.org/models/resnet_v1_50_2016_08_28.tar.gz)) from [here](https://github.com/yangxue0827/models/tree/master/slim), then extract to folder ./data/pretrained_weights    
-4、Choose a model([FPN](https://github.com/yangxue0827/FPN_Tensorflow).  and R2CNN)     
-If you want to train [FPN](https://github.com/yangxue0827/FPN_Tensorflow). :        
+4、Choose a model([FPN](https://github.com/yangxue0827/FPN_Tensorflow)  and R2CNN)     
+If you want to train [FPN](https://github.com/yangxue0827/FPN_Tensorflow) :        
 >python ./tools/train.py
 
 elif you want to train R2CNN:     
