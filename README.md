@@ -29,10 +29,10 @@ python ./data/io/convert_data_to_tfrecord.py --VOC_dir='***/VOCdevkit/VOCdevkit_
 1、Unzip the weight ./output/res101_trained_weights/*.rar   
 2、put images in ./tools/inference_image  
 3、python ./tools/inference1.py          
-If you want to train FPN:        
+If you want to test FPN:        
 >python ./tools/inference.py
 
-elif you want to train R2CNN:     
+elif you want to test R2CNN:     
 >python ./tools/inference1.py 
 
 # Train
