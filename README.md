@@ -86,8 +86,10 @@ elif you want to train R2CNN:
   python eval.py(eval1.py)  
   ```  
 
-# Summary   
-tensorboard --logdir=$R2CNN_ROOT/output/res101_summary/   
+# Summary    
+  ```Shell    
+  tensorboard --logdir=$R2CNN_ROOT/output/res101_summary/ 
+  ```     
 ![01](output/res101_summary/fast_rcnn_loss.bmp) 
 ![02](output/res101_summary/rpn_loss.bmp) 
 ![03](output/res101_summary/total_loss.bmp) 
