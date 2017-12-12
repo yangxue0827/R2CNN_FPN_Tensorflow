@@ -39,8 +39,8 @@ Clone the repository
 # Demo   
 1、Unzip the weight $R2CNN_ROOT/output/res101_trained_weights/*.rar    
 2、put images in $R2CNN_ROOT/tools/inference_image   
-3、Configure parameters in $R2CNN_ROOT/libs/configs/cfgs.py and modify the project's root directory
-4、  
+3、Configure parameters in $R2CNN_ROOT/libs/configs/cfgs.py and modify the project's root directory    
+4、     
   ```Shell    
   cd $R2CNN_ROOT/tools      
   ```    
