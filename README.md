@@ -43,12 +43,13 @@ Clone the repository
 4、Configure parameters in $R2CNN_ROOT/libs/configs/cfgs.py and modify the project's root directory 
 5、cd $R2CNN_ROOT/tools         
 If you want to test [FPN](https://github.com/yangxue0827/FPN_Tensorflow) :        
-> ```Shell    
+  ```Shell    
   python inference.py   
   ```    
 
-elif you want to test R2CNN:     
-> ```Shell    
+elif you want to test R2CNN:   
+  
+  ```Shell    
   python inference1.py   
   ```    
 
@@ -58,12 +59,12 @@ elif you want to test R2CNN:
 3、cd $R2CNN_ROOT/tools
 4、Choose a model([FPN](https://github.com/yangxue0827/FPN_Tensorflow)  and R2CNN)     
 If you want to train [FPN](https://github.com/yangxue0827/FPN_Tensorflow) :        
-> ```Shell    
+  ```Shell    
   python train.py   
   ```      
 
-elif you want to train R2CNN:     
->```Shell    
+elif you want to train R2CNN:  
+   ```Shell    
   python train1.py   
   ``` 
 
