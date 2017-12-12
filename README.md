@@ -8,7 +8,13 @@ If useful to you, please star to support my work. Thanks.
 # Configuration Environment
 ubuntu(Encoding problems may occur on windows) + python2 + tensorflow1.2 + cv2 + cuda8.0 + GeForce GTX 1080     
 If you want to use cpu, you need to modify the parameters of NMS and IOU functions use_gpu = False  in cfgs.py     
-You can also use docker environment, command: docker push yangxue2docker/tensorflow3_gpu_cv2_sshd:v1.0     
+You can also use docker environment, command: docker push yangxue2docker/tensorflow3_gpu_cv2_sshd:v1.0    
+
+# Installation      
+  Clone the repository    
+  ```Shell    
+  git clone https://github.com/yangxue0827/R2CNN_FPN_Tensorflow.git    
+  ```     
 
 # Make tfrecord   
 The image name is best in English.    
@@ -24,38 +30,42 @@ VOCdevkit
 >>Annotation   
 >>JPEGImages   
 
-python ./data/io/convert_data_to_tfrecord.py --VOC_dir='***/VOCdevkit/VOCdevkit_train/' --save_name='train' --img_format='.jpg' --dataset='ship'
-
-# Demo     
-1、Unzip the weight ./output/res101_trained_weights/*.rar   
-2、put images in ./tools/inference_image  
-3、python ./tools/inference1.py          
+cd $R2CNN_ROOT/data/io/  
+python convert_data_to_tfrecord.py --VOC_dir='***/VOCdevkit/VOCdevkit_train/' --save_name='train' --img_format='.jpg' --dataset='ship'
+    
+# Demo   
+1、Unzip the weight $R2CNN_ROOT/output/res101_trained_weights/*.rar    
+2、put images in $R2CNN_ROOT/tools/inference_image   
+3、Configure parameters in $R2CNN_ROOT/libs/configs/cfgs.py and modify the project's root directory 
+4、Configure parameters in $R2CNN_ROOT/libs/configs/cfgs.py and modify the project's root directory 
+5、cd $R2CNN_ROOT/tools         
 If you want to test [FPN](https://github.com/yangxue0827/FPN_Tensorflow) :        
->python ./tools/inference.py
+>python inference.py    
 
 elif you want to test R2CNN:     
->python ./tools/inference1.py 
+>python inference1.py   
 
-# Train
-1、Configure parameters in ./libs/configs/cfgs.py and modify the project's root directory    
-2、Modify ./libs/lable_name_dict/***_dict.py, corresponding to the number of categories in the configuration file    
-3、download pretrain weight([resnet_v1_101_2016_08_28.tar.gz](http://download.tensorflow.org/models/resnet_v1_101_2016_08_28.tar.gz) or [resnet_v1_50_2016_08_28.tar.gz](http://download.tensorflow.org/models/resnet_v1_50_2016_08_28.tar.gz)) from [here](https://github.com/yangxue0827/models/tree/master/slim), then extract to folder ./data/pretrained_weights    
+# Train   
+1、Modify $R2CNN_ROOT/libs/lable_name_dict/***_dict.py, corresponding to the number of categories in the configuration file    
+2、download pretrain weight([resnet_v1_101_2016_08_28.tar.gz](http://download.tensorflow.org/models/resnet_v1_101_2016_08_28.tar.gz) or [resnet_v1_50_2016_08_28.tar.gz](http://download.tensorflow.org/models/resnet_v1_50_2016_08_28.tar.gz)) from [here](https://github.com/yangxue0827/models/tree/master/slim), then extract to folder $R2CNN_ROOT/data/pretrained_weights    
+3、cd $R2CNN_ROOT/tools
 4、Choose a model([FPN](https://github.com/yangxue0827/FPN_Tensorflow)  and R2CNN)     
 If you want to train [FPN](https://github.com/yangxue0827/FPN_Tensorflow) :        
->python ./tools/train.py
+>python train.py     
 
 elif you want to train R2CNN:     
->python ./tools/train1.py
+>python train1.py
 
 # Test tfrecord     
-mkdir test_result    
-python ./tools/test.py(test1.py)    
+cd $R2CNN_ROOT/tools   
+python test.py(test1.py)    
 
 # eval   
-python ./tools/eval.py(eval1.py)
+cd $R2CNN_ROOT/tools   
+python eval.py(eval1.py)
 
 # Summary   
-tensorboard --logdir=./output/res101_summary/   
+tensorboard --logdir=$R2CNN_ROOT/output/res101_summary/   
 ![01](output/res101_summary/fast_rcnn_loss.bmp) 
 ![02](output/res101_summary/rpn_loss.bmp) 
 ![03](output/res101_summary/total_loss.bmp) 
