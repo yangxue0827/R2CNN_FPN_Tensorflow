@@ -12,6 +12,7 @@ You can also use docker environment, command: docker push yangxue2docker/tensorf
 
 # Make tfrecord   
 The image name is best in English.    
+Image size w*h = 1000*600.    
 The data is VOC format, reference [here](sample.xml)     
 data path format  
 VOCdevkit  
