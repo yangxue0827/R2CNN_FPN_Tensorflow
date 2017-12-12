@@ -30,9 +30,12 @@ VOCdevkit
 >>Annotation   
 >>JPEGImages   
 
-cd $R2CNN_ROOT/data/io/  
-python convert_data_to_tfrecord.py --VOC_dir='***/VOCdevkit/VOCdevkit_train/' --save_name='train' --img_format='.jpg' --dataset='ship'
-    
+Clone the repository    
+  ```Shell    
+  cd $R2CNN_ROOT/data/io/  
+  python convert_data_to_tfrecord.py --VOC_dir='***/VOCdevkit/VOCdevkit_train/' --save_name='train' --img_format='.jpg' --dataset='ship'
+       
+  ``` 
 # Demo   
 1、Unzip the weight $R2CNN_ROOT/output/res101_trained_weights/*.rar    
 2、put images in $R2CNN_ROOT/tools/inference_image   
@@ -40,10 +43,14 @@ python convert_data_to_tfrecord.py --VOC_dir='***/VOCdevkit/VOCdevkit_train/' --
 4、Configure parameters in $R2CNN_ROOT/libs/configs/cfgs.py and modify the project's root directory 
 5、cd $R2CNN_ROOT/tools         
 If you want to test [FPN](https://github.com/yangxue0827/FPN_Tensorflow) :        
->python inference.py    
+> ```Shell    
+  python inference.py   
+  ```    
 
 elif you want to test R2CNN:     
->python inference1.py   
+> ```Shell    
+  python inference1.py   
+  ```    
 
 # Train   
 1、Modify $R2CNN_ROOT/libs/lable_name_dict/***_dict.py, corresponding to the number of categories in the configuration file    
@@ -51,18 +58,26 @@ elif you want to test R2CNN:
 3、cd $R2CNN_ROOT/tools
 4、Choose a model([FPN](https://github.com/yangxue0827/FPN_Tensorflow)  and R2CNN)     
 If you want to train [FPN](https://github.com/yangxue0827/FPN_Tensorflow) :        
->python train.py     
+> ```Shell    
+  python train.py   
+  ```      
 
 elif you want to train R2CNN:     
->python train1.py
+>```Shell    
+  python train1.py   
+  ``` 
 
 # Test tfrecord     
-cd $R2CNN_ROOT/tools   
-python test.py(test1.py)    
+  ```Shell    
+  cd $R2CNN_ROOT/tools   
+  python test.py(test1.py)   
+  ```    
 
 # eval   
-cd $R2CNN_ROOT/tools   
-python eval.py(eval1.py)
+  ```Shell    
+  cd $R2CNN_ROOT/tools   
+  python eval.py(eval1.py)  
+  ```  
 
 # Summary   
 tensorboard --logdir=$R2CNN_ROOT/output/res101_summary/   
