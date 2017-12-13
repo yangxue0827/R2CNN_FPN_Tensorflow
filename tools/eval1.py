@@ -392,11 +392,11 @@ if __name__ == '__main__':
         mAP1 += ap1
         F += F_measure
         F1 += F_measure1
-    print('\n{}\tR:{}\tP:{}\tap:{}\tF:{}'.format('horizontal standard', R / cfgs.CLASS_NUM,
+    print('\n{}\tR:{}\tP:{}\tmAP:{}\tF:{}'.format('horizontal standard', R / cfgs.CLASS_NUM,
                                                  P / cfgs.CLASS_NUM,
                                                  mAP / cfgs.CLASS_NUM,
                                                  F / cfgs.CLASS_NUM))
-    print('\n{}\tR:{}\tP:{}\tap:{}\tF:{}'.format('rotate standard', R1 / cfgs.CLASS_NUM,
+    print('\n{}\tR:{}\tP:{}\tmAP:{}\tF:{}'.format('rotate standard', R1 / cfgs.CLASS_NUM,
                                                  P1 / cfgs.CLASS_NUM,
                                                  mAP1 / cfgs.CLASS_NUM,
                                                  F1 / cfgs.CLASS_NUM))

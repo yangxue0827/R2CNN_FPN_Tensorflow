@@ -339,7 +339,7 @@ if __name__ == '__main__':
         P += precision
         mAP += ap
         F += F_measure
-    print('\n{}\tR:{}\tP:{}\tap:{}\tF:{}'.format('Final', R / cfgs.CLASS_NUM,
+    print('\n{}\tR:{}\tP:{}\tmAP:{}\tF:{}'.format('Final', R / cfgs.CLASS_NUM,
                                                  P / cfgs.CLASS_NUM,
                                                  mAP / cfgs.CLASS_NUM,
                                                  F / cfgs.CLASS_NUM))
