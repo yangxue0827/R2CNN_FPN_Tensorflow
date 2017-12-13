@@ -342,7 +342,7 @@ def eval(rboxes, gboxes, iou_th, use_07_metric, mode):
         rec = tp / box_num
     ap = voc_ap(rec, prec, use_07_metric)
 
-    return rec, prec, ap
+    return rec, prec, ap, box_num
 
 
 if __name__ == '__main__':
@@ -360,11 +360,8 @@ if __name__ == '__main__':
     gtboxes_rotate_dict = pickle.load(fr3)
     predict_rotate_dict = pickle.load(fr4)
 
-    rec, prec, ap = eval(predict_horizontal_dict, gtboxes_horizontal_dict, 0.5, False, mode=0)
-    rec1, prec1, ap1 = eval(predict_rotate_dict, gtboxes_rotate_dict, 0.5, False, mode=mode)
-
-    R, P, mAP, F = 0, 0, 0, 0
-    R1, P1, mAP1, F1 = 0, 0, 0, 0
+    R, P, AP, F, num = [], [], [], [], []
+    R1, P1, AP1, F1, num1 = [], [], [], [], []
 
     for label in NAME_LABEL_MAP.keys():
         if label == 'back_ground':
@@ -373,8 +370,8 @@ if __name__ == '__main__':
         rboxes, gboxes = get_single_label_dict(predict_horizontal_dict, gtboxes_horizontal_dict, label)
         rboxes1, gboxes1 = get_single_label_dict(predict_rotate_dict, gtboxes_rotate_dict, label)
 
-        rec, prec, ap = eval(rboxes, gboxes, 0.5, False, mode=0)
-        rec1, prec1, ap1 = eval(rboxes1, gboxes1, 0.5, False, mode=mode)
+        rec, prec, ap, box_num = eval(rboxes, gboxes, 0.5, False, mode=0)
+        rec1, prec1, ap1, box_num1 = eval(rboxes1, gboxes1, 0.5, False, mode=mode)
 
         recall = rec[-1]
         recall1 = rec1[-1]
@@ -384,22 +381,41 @@ if __name__ == '__main__':
         F_measure1 = (2 * precision1 * recall1) / (recall1 + precision1)
         print('\n{}\tR:{}\tP:{}\tap:{}\tF:{}'.format(label, recall, precision, ap, F_measure))
         print('\n{}\tR:{}\tP:{}\tap:{}\tF:{}'.format(label, recall1, precision1, ap1, F_measure1))
-        R += recall
-        R1 += recall1
-        P += precision
-        P1 += precision1
-        mAP += ap
-        mAP1 += ap1
-        F += F_measure
-        F1 += F_measure1
-    print('\n{}\tR:{}\tP:{}\tmAP:{}\tF:{}'.format('horizontal standard', R / cfgs.CLASS_NUM,
-                                                 P / cfgs.CLASS_NUM,
-                                                 mAP / cfgs.CLASS_NUM,
-                                                 F / cfgs.CLASS_NUM))
-    print('\n{}\tR:{}\tP:{}\tmAP:{}\tF:{}'.format('rotate standard', R1 / cfgs.CLASS_NUM,
-                                                 P1 / cfgs.CLASS_NUM,
-                                                 mAP1 / cfgs.CLASS_NUM,
-                                                 F1 / cfgs.CLASS_NUM))
+        R.append(recall)
+        P.append(precision)
+        AP.append(ap)
+        F.append(F_measure)
+        num.append(box_num)
+        R1.append(recall1)
+        P1.append(precision1)
+        AP1.append(ap1)
+        F1.append(F_measure1)
+        num1.append(box_num1)
+
+    R = np.array(R)
+    P = np.array(P)
+    AP = np.array(AP)
+    F = np.array(F)
+    num = np.array(num)
+    weights = num / np.sum(num)
+    Recall = np.sum(R * weights)
+    Precision = np.sum(P * weights)
+    mAP = np.sum(AP * weights)
+    F_measure = np.sum(F * weights)
+
+    R1 = np.array(R1)
+    P1 = np.array(P1)
+    AP1 = np.array(AP1)
+    F1 = np.array(F1)
+    num1 = np.array(num1)
+    weights1 = num / np.sum(num1)
+    Recall1 = np.sum(R1 * weights1)
+    Precision1 = np.sum(P1 * weights1)
+    mAP1 = np.sum(AP1 * weights1)
+    F_measure1 = np.sum(F1 * weights1)
+
+    print('\n{}\tR:{}\tP:{}\tmAP:{}\tF:{}'.format('horizontal standard', Recall, Precision, mAP, F_measure))
+    print('\n{}\tR:{}\tP:{}\tmAP:{}\tF:{}'.format('rotate standard', Recall1, Precision1, mAP1, F_measure1))
 
     fr1.close()
     fr2.close()
