@@ -386,6 +386,7 @@ if __name__ == '__main__':
         AP.append(ap)
         F.append(F_measure)
         num.append(box_num)
+
         R1.append(recall1)
         P1.append(precision1)
         AP1.append(ap1)
@@ -408,7 +409,7 @@ if __name__ == '__main__':
     AP1 = np.array(AP1)
     F1 = np.array(F1)
     num1 = np.array(num1)
-    weights1 = num / np.sum(num1)
+    weights1 = num1 / np.sum(num1)
     Recall1 = np.sum(R1 * weights1)
     Precision1 = np.sum(P1 * weights1)
     mAP1 = np.sum(AP1 * weights1)
