@@ -254,6 +254,24 @@ def voc_ap(rec, prec, use_07_metric=False):
     return ap
 
 
+def get_single_label_dict(predict_dict, gtboxes_dict, label):
+    rboxes = {}
+    gboxes = {}
+    rbox_images = predict_dict.keys()
+    for i in range(len(rbox_images)):
+        rbox_image = rbox_images[i]
+        for pre_box in predict_dict[rbox_image]:
+            if pre_box['name'] == label and len(pre_box['bbox']) != 0:
+                rboxes[rbox_image] = [pre_box]
+
+                gboxes[rbox_image] = []
+
+                for gt_box in gtboxes_dict[rbox_image]:
+                    if gt_box['name'] == label:
+                        gboxes[rbox_image].append(gt_box)
+    return rboxes, gboxes
+
+
 def eval(rboxes, gboxes, iou_th, use_07_metric, mode):
     rbox_images = rboxes.keys()
     fp = np.zeros(len(rbox_images))
@@ -262,7 +280,7 @@ def eval(rboxes, gboxes, iou_th, use_07_metric, mode):
 
     for i in range(len(rbox_images)):
         rbox_image = rbox_images[i]
-        if len(rboxes[rbox_image]) > 0:
+        if len(rboxes[rbox_image][0]['bbox']) > 0:
 
             rbox_lists = np.array(rboxes[rbox_image][0]['bbox'])
             if len(gboxes[rbox_image]) > 0:
@@ -303,7 +321,7 @@ def eval(rboxes, gboxes, iou_th, use_07_metric, mode):
                     else:
                         fp[i] += 1
             else:
-                fp[i] += len(rboxes[rbox_image])
+                fp[i] += len(rboxes[rbox_image][0]['bbox'])
         else:
             continue
     rec = np.zeros(len(rbox_images))
@@ -345,24 +363,44 @@ if __name__ == '__main__':
     rec, prec, ap = eval(predict_horizontal_dict, gtboxes_horizontal_dict, 0.5, False, mode=0)
     rec1, prec1, ap1 = eval(predict_rotate_dict, gtboxes_rotate_dict, 0.5, False, mode=mode)
 
-    recall = rec[-1]
-    recall1 = rec1[-1]
-    precision = prec[-1]
-    precision1 = prec1[-1]
-    mAP = ap
-    mAP1 = ap1
-    F_measure = (2*precision*recall)/(recall+precision)
-    F_measure1 = (2*precision1*recall1)/(recall1+precision1)
-    print('\n*********horizontal eval*********')
-    print('R:', recall)
-    print('P:', precision)
-    print('mAP:', mAP)
-    print('F:', F_measure)
-    print('***********rotate eval***********')
-    print('R:', recall1)
-    print('P:', precision1)
-    print('mAP:', mAP1)
-    print('F:', F_measure1)
+    R, P, mAP, F = 0, 0, 0, 0
+    R1, P1, mAP1, F1 = 0, 0, 0, 0
+
+    for label in NAME_LABEL_MAP.keys():
+        if label == 'back_ground':
+            continue
+
+        rboxes, gboxes = get_single_label_dict(predict_horizontal_dict, gtboxes_horizontal_dict, label)
+        rboxes1, gboxes1 = get_single_label_dict(predict_rotate_dict, gtboxes_rotate_dict, label)
+
+        rec, prec, ap = eval(rboxes, gboxes, 0.5, False, mode=0)
+        rec1, prec1, ap1 = eval(rboxes1, gboxes1, 0.5, False, mode=mode)
+
+        recall = rec[-1]
+        recall1 = rec1[-1]
+        precision = prec[-1]
+        precision1 = prec1[-1]
+        F_measure = (2 * precision * recall) / (recall + precision)
+        F_measure1 = (2 * precision1 * recall1) / (recall1 + precision1)
+        print('\n{}\tR:{}\tP:{}\tap:{}\tF:{}'.format(label, recall, precision, ap, F_measure))
+        print('\n{}\tR:{}\tP:{}\tap:{}\tF:{}'.format(label, recall1, precision1, ap1, F_measure1))
+        R += recall
+        R1 += recall1
+        P += precision
+        P1 += precision1
+        mAP += ap
+        mAP1 += ap1
+        F += F_measure
+        F1 += F_measure1
+    print('\n{}\tR:{}\tP:{}\tap:{}\tF:{}'.format('horizontal standard', R / cfgs.CLASS_NUM,
+                                                 P / cfgs.CLASS_NUM,
+                                                 mAP / cfgs.CLASS_NUM,
+                                                 F / cfgs.CLASS_NUM))
+    print('\n{}\tR:{}\tP:{}\tap:{}\tF:{}'.format('rotate standard', R1 / cfgs.CLASS_NUM,
+                                                 P1 / cfgs.CLASS_NUM,
+                                                 mAP1 / cfgs.CLASS_NUM,
+                                                 F1 / cfgs.CLASS_NUM))
+
     fr1.close()
     fr2.close()
     fr3.close()
