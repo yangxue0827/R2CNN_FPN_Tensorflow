@@ -44,7 +44,7 @@ Clone the repository
   ```Shell    
   cd $R2CNN_ROOT/tools      
   ```    
-5、  
+5、image slice      
 If you want to test [FPN](https://github.com/yangxue0827/FPN_Tensorflow) :        
   ```Shell    
   python inference.py   
@@ -54,7 +54,12 @@ elif you want to test R2CNN:
   
   ```Shell    
   python inference1.py   
-  ```    
+  ```   
+6、big image      
+  ```Shell    
+  cd $FPN_ROOT/tools
+  python demo.py (demo1.py)  
+  ```   
 
 # Train   
 1、Modify $R2CNN_ROOT/libs/lable_name_dict/***_dict.py, corresponding to the number of categories in the configuration file    
