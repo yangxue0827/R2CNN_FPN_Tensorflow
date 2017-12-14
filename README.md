@@ -58,7 +58,7 @@ elif you want to test R2CNN:
 6、big image      
   ```Shell    
   cd $FPN_ROOT/tools
-  python demo.py (demo1.py)  
+  python demo.py(demo1.py) --src_folder=.\demo_src --des_folder=.\demo_des         
   ```   
 
 # Train   
