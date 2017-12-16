@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import division, print_function, absolute_import
 import sys
-sys.path.append('../')
+sys.path.append('../../')
 import xml.etree.cElementTree as ET
 from libs.configs import cfgs
 import numpy as np
