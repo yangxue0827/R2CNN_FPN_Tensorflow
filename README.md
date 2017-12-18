@@ -20,7 +20,7 @@ You can also use docker environment, command: docker push yangxue2docker/tensorf
 The image name is best in English.    
 Image size w = 1000, h = 600.    
 The data is VOC format, reference [here](sample.xml)     
-data path format  
+data path format  ($FPN_ROOT/data/io/divide_data.py)    
 VOCdevkit  
 >VOCdevkit_train  
 >>Annotation  
