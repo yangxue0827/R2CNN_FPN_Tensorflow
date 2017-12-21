@@ -457,7 +457,7 @@ if __name__ == "__main__":
     args = parse_args()
     print('Called with args:')
     print(args)
-    file_paths = get_file_paths_recursive(args.src_folder, ".tif")
+    file_paths = get_file_paths_recursive(args.src_folder, args.image_ext)
 
     detect_img(file_paths, args.des_folder, args.det_th, args.h_len, args.w_len, False)
 
