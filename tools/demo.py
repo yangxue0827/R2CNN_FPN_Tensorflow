@@ -397,7 +397,7 @@ def detect_img(file_paths, des_folder, det_th, h_len, w_len, show_res=False):
                                 score_res.append(scores[ii])
                 # ds = None
                 time_elapsed = timer() - start
-                print("{} etection time : {:.4f} sec".format(img_path.split('/')[-1].split('.')[0], time_elapsed))
+                print("{} detection time : {:.4f} sec".format(img_path.split('/')[-1].split('.')[0], time_elapsed))
 
                 # if target_name == 'aircraft':
                 # img = cv2.imread(img_path)
