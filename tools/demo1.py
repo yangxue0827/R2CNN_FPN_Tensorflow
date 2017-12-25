@@ -425,11 +425,11 @@ def detect_img(file_paths, des_folder, det_th, h_len, w_len, show_res=False):
                 #     img_gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
                 #     img[:, :, 0] = img[:, :, 1] = img[:, :, 2] = img_gray
                 mkdir(des_folder)
-                img_np = draw_box_cv(img,
+                img_np = draw_box_cv(np.array(img, np.float32) - np.array([103.939, 116.779, 123.68]),
                                      boxes=np.array(box_res),
                                      labels=np.array(label_res),
                                      scores=np.array(score_res))
-                img_np_rotate = draw_rotate_box_cv(img,
+                img_np_rotate = draw_rotate_box_cv(np.array(img, np.float32) - np.array([103.939, 116.779, 123.68]),
                                                    boxes=np.array(box_res_rotate),
                                                    labels=np.array(label_res_rotate),
                                                    scores=np.array(score_res_rotate))

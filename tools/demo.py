@@ -410,7 +410,7 @@ def detect_img(file_paths, des_folder, det_th, h_len, w_len, show_res=False):
                 img_np = draw_box_cv(img,
                                      boxes=np.array(box_res),
                                      labels=np.array(label_res),
-                                     scores=np.array(score_res))
+                                     scores=np.array(score_res)) - np.array([103.939, 116.779, 123.68])
                 cv2.imwrite(des_folder + '/{}_fpn.jpg'.format(img_path.split('/')[-1].split('.')[0]), img_np)
                 # clip_obj_imgs(src_img, box_res, label_res, score_res, des_folder)
                 # print(img_path)
