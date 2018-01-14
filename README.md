@@ -19,7 +19,7 @@ You can also use docker environment, command: docker push yangxue2docker/tensorf
 # Make tfrecord   
 The image name is best in English.    
 The data is VOC format, reference [here](sample.xml)     
-data path format  ($FPN_ROOT/data/io/divide_data.py)    
+data path format  ($R2CNN_ROOT/data/io/divide_data.py)    
 VOCdevkit  
 >VOCdevkit_train  
 >>Annotation  
