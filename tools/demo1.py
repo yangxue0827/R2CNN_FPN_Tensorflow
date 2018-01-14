@@ -19,19 +19,9 @@ from libs.configs import cfgs
 from help_utils.tools import *
 from help_utils.help_utils import *
 import argparse
+from libs.box_utils import nms_rotate
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"
-
-
-def chw2hwc(img):
-    """ Convert image data from [channel, height, weight] to [height, weight, channel],
-    and the origianl image should be [channel, height, weight]
-    :param img:
-    :return:
-    """
-    res = np.swapaxes(img, 0, 2) # w,h,c
-    res = np.swapaxes(res, 0, 1) # h,w,c
-    return res
 
 
 def get_file_paths_recursive(folder=None, file_ext=None):
@@ -52,173 +42,6 @@ def get_file_paths_recursive(folder=None, file_ext=None):
             if file_name.endswith(file_ext):
                 file_list.append(os.path.join(dir_path, file_name))
     return file_list
-
-
-def visualize_detection(src_img, boxes, scores):
-    """ visualize detections in one image
-    :param src_img: numpy.array
-    :param boxes: [[x1, y1, x2, y2]...], each row is one object
-    :param class_names: class names, and each row is one object
-    :param scores: score for each object (each row)
-    :return:
-    """
-    plt.imshow(src_img)
-    box_num = len(boxes)
-    color = (1.0, 0.0, 0.0)
-    for i in range(box_num):
-        box = boxes[i]
-        rect = plt.Rectangle((box[0], box[1]), box[2] - box[0], box[3] - box[1], fill=False,
-                             edgecolor=color, linewidth=1.5)
-        plt.gca().add_patch(rect)
-        plt.gca().text(box[0], box[1] - 2, '{:.3f}'.format(scores[i]),
-                       bbox=dict(facecolor=color, alpha=0.5), fontsize=6, color='white')
-    plt.show()
-
-
-# def obj_to_det_xml(img_path, box_res, label_res, score_res, det_xml_path):
-#     """ Save detection results to det.xml
-#     :param img_path:
-#     :param box_res:
-#     :param label_res:
-#     :param score_res:
-#     :param det_xml_path:
-#     :return:
-#     """
-#     gdal.AllRegister()
-#     ds = gdal.Open(img_path, gdalconst.GA_Update)
-#     if ds is None:
-#         print("Image %s open failed!" % img_path)
-#         sys.exit()
-#     proj_str = ds.GetProjection()
-#     geoTf = ds.GetGeoTransform()
-#
-#     obj_n = len(box_res)
-#
-#     doc = xml.dom.minidom.Document()
-#     root_node = doc.createElement("ImageInfo")
-#     root_node.setAttribute("resolution", str(geoTf[1]))
-#     root_node.setAttribute("imagingtime", time.strftime('%Y-%m-%dT%H:%M:%S'))
-#     doc.appendChild(root_node)
-#
-#     BaseInfo_node = doc.createElement("BaseInfo")
-#     BaseInfo_node.setAttribute("description", " ")
-#     BaseInfo_node.setAttribute("ID", " ")
-#     BaseInfo_node.setAttribute("name", "sewage")
-#     root_node.appendChild(BaseInfo_node)
-#
-#     result_node = doc.createElement("result")
-#     DetectNumber_node = doc.createElement("DetectNumber")
-#     DetectNumber_value = doc.createTextNode(str(obj_n))
-#     DetectNumber_node.appendChild(DetectNumber_value)
-#     result_node.appendChild(DetectNumber_node)
-#
-#     for ii in range(obj_n):
-#         box = box_res[ii]
-#         xmin = geoTf[0] + geoTf[1] * box[1]
-#         ymin = geoTf[3] + geoTf[5] * box[0]
-#         xmax = geoTf[0] + geoTf[1] * box[3]
-#         ymax = geoTf[3] + geoTf[5] * box[2]
-#
-#         DetectResult_node = doc.createElement("DetectResult")
-#
-#         ResultID_node = doc.createElement("ResultID")
-#         ResultID_value = doc.createTextNode(str(ii))
-#         ResultID_node.appendChild(ResultID_value)
-#
-#         Shape_node = doc.createElement("Shape")
-#         Point1_node = doc.createElement("Point")
-#         Point1_value = doc.createTextNode("%.6f, %.6f" % (xmin, ymin))
-#         Point1_node.appendChild(Point1_value)
-#
-#         Point2_node = doc.createElement("Point")
-#         Point2_value = doc.createTextNode("%.6f, %.6f" % (xmax, ymin))
-#         Point2_node.appendChild(Point2_value)
-#
-#         Point3_node = doc.createElement("Point")
-#         Point3_value = doc.createTextNode("%.6f, %.6f" % (xmax, ymax))
-#         Point3_node.appendChild(Point3_value)
-#
-#         Point4_node = doc.createElement("Point")
-#         Point4_value = doc.createTextNode("%.6f, %.6f" % (xmin, ymax))
-#         Point4_node.appendChild(Point4_value)
-#
-#         Point5_node = doc.createElement("Point")
-#         Point5_value = doc.createTextNode("%.6f, %.6f" % (xmin, ymin))
-#         Point5_node.appendChild(Point5_value)
-#
-#         Shape_node.appendChild(Point1_node)
-#         Shape_node.appendChild(Point2_node)
-#         Shape_node.appendChild(Point3_node)
-#         Shape_node.appendChild(Point4_node)
-#         Shape_node.appendChild(Point5_node)
-#
-#         Location_node = doc.createElement("Location")
-#         Location_value = doc.createTextNode("unknown")
-#         Location_node.appendChild(Location_value)
-#
-#         CenterLonLat_node = doc.createElement("CenterLonLat")
-#         CenterLonLat_value = doc.createTextNode("0.000000, 0.000000")
-#         CenterLonLat_node.appendChild(CenterLonLat_value)
-#
-#         Length_node = doc.createElement("Length")
-#         Length_value = doc.createTextNode("0")
-#         Length_node.appendChild(Length_value)
-#
-#         Width_node = doc.createElement("Width")
-#         Width_value = doc.createTextNode("0")
-#         Width_node.appendChild(Width_value)
-#
-#         Area_node = doc.createElement("Area")
-#         Area_value = doc.createTextNode("0")
-#         Area_node.appendChild(Area_value)
-#
-#         Angle_node = doc.createElement("Angle")
-#         Angle_value = doc.createTextNode("0")
-#         Angle_node.appendChild(Angle_value)
-#
-#         Probability_node = doc.createElement("Probability")
-#         Probability_value = doc.createTextNode("1.0")
-#         Probability_node.appendChild(Probability_value)
-#
-#         ResultImagePath_node = doc.createElement("ResultImagePath")
-#         ResultImagePath_value = doc.createTextNode(" ")
-#         ResultImagePath_node.appendChild(ResultImagePath_value)
-#
-#         ValidationName_node = doc.createElement("ValidationName")
-#         ValidationName_value = doc.createTextNode(" ")
-#         ValidationName_node.appendChild(ValidationName_value)
-#
-#         PossibleResults_node = doc.createElement("PossibleResults")
-#
-#         Type_node = doc.createElement("Type")
-#         Type_value = doc.createTextNode("%s" % label_res[ii])
-#         Type_node.appendChild(Type_value)
-#
-#         Reliability_node = doc.createElement("Reliability")
-#         Reliability_value = doc.createTextNode("%.3f" % score_res[ii])
-#         Reliability_node.appendChild(Reliability_value)
-#
-#         PossibleResults_node.appendChild(Type_node)
-#         PossibleResults_node.appendChild(Reliability_node)
-#
-#         DetectResult_node.appendChild(ResultID_node)
-#         DetectResult_node.appendChild(Shape_node)
-#         DetectResult_node.appendChild(Location_node)
-#         DetectResult_node.appendChild(CenterLonLat_node)
-#         DetectResult_node.appendChild(Length_node)
-#         DetectResult_node.appendChild(Width_node)
-#         DetectResult_node.appendChild(Area_node)
-#         DetectResult_node.appendChild(Angle_node)
-#         DetectResult_node.appendChild(Probability_node)
-#         DetectResult_node.appendChild(ResultImagePath_node)
-#         DetectResult_node.appendChild(ValidationName_node)
-#         DetectResult_node.appendChild(PossibleResults_node)
-#
-#         result_node.appendChild(DetectResult_node)
-#     root_node.appendChild(result_node)
-#
-#     with open(det_xml_path, "w+") as f:
-#         f.write(doc.toprettyxml(indent="\t", newl="\n", encoding="utf-8"))
 
 
 def clip_obj_imgs(src_img, boxes, classes, scores, des_folder):
@@ -251,14 +74,15 @@ def clip_obj_imgs(src_img, boxes, classes, scores, des_folder):
         ii = ii + 1
 
 
-def detect_img(file_paths, des_folder, det_th, h_len, w_len, show_res=False):
+def detect_img(file_paths, des_folder, det_th, h_len, w_len, h_overlap, w_overlap, show_res=False):
     with tf.Graph().as_default():
 
         img_plac = tf.placeholder(shape=[None, None, 3], dtype=tf.uint8)
 
         img_tensor = tf.cast(img_plac, tf.float32) - tf.constant([103.939, 116.779, 123.68])
         img_batch = image_preprocess.short_side_resize_for_inference_data(img_tensor,
-                                                                          target_shortside_len=cfgs.SHORT_SIDE_LEN)
+                                                                          target_shortside_len=cfgs.SHORT_SIDE_LEN,
+                                                                          is_resize=False)
 
         # ***********************************************************************************************
         # *                                         share net                                           *
@@ -351,11 +175,6 @@ def detect_img(file_paths, des_folder, det_th, h_len, w_len, show_res=False):
 
             for img_path in file_paths:
                 start = timer()
-                # gdal.AllRegister()
-                # ds = gdal.Open(img_path, gdalconst.GA_ReadOnly)
-                # if ds is None:
-                #     print("Image %s open failed!" % img_path)
-                #     sys.exit()
                 img = cv2.imread(img_path)
 
                 box_res = []
@@ -364,25 +183,19 @@ def detect_img(file_paths, des_folder, det_th, h_len, w_len, show_res=False):
                 box_res_rotate = []
                 label_res_rotate = []
                 score_res_rotate = []
-                # imgH = ds.RasterYSize
-                # imgW = ds.RasterXSize
+
                 imgH = img.shape[0]
                 imgW = img.shape[1]
-                for hh in range(0, imgH, h_len):
+                for hh in range(0, imgH, h_len - h_overlap):
                     h_size = min(h_len, imgH - hh)
                     if h_size < 10:
                         break
-                    for ww in range(0, imgW, w_len):
+                    for ww in range(0, imgW, w_len - w_overlap):
                         w_size = min(w_len, imgW - ww)
                         if w_size < 10:
                             break
 
-                        # src_img = ds.ReadAsArray(ww, hh, w_size, h_size)
                         src_img = img[hh:(hh + h_size), ww:(ww + w_size), :]
-                        # if len(src_img.shape) == 2:
-                        #     src_img = cv2.cvtColor(src_img, cv2.COLOR_GRAY2RGB)
-                        # else:
-                        #     src_img = chw2hwc(src_img)
 
                         boxes, labels, scores = sess.run([fast_rcnn_decode_boxes, detection_category, fast_rcnn_score],
                                                          feed_dict={img_plac: src_img})
@@ -392,8 +205,6 @@ def detect_img(file_paths, des_folder, det_th, h_len, w_len, show_res=False):
                                                                                fast_rcnn_score_rotate],
                                                                               feed_dict={img_plac: src_img})
 
-                        if show_res:
-                            visualize_detection(src_img, boxes, scores)
                         if len(boxes) > 0:
                             for ii in range(len(boxes)):
                                 box = boxes[ii]
@@ -413,17 +224,15 @@ def detect_img(file_paths, des_folder, det_th, h_len, w_len, show_res=False):
                                 label_res_rotate.append(labels_rotate[ii])
                                 score_res_rotate.append(scores_rotate[ii])
 
-                # ds = None
+                # inx = nms_rotate.nms_rotate_cpu(boxes=box_res_rotate, scores=score_res_rotate,
+                #                                 iou_threshold=0.5, max_output_size=100)
+                # box_res_rotate = box_res_rotate[inx]
+                # score_res_rotate = score_res_rotate[inx]
+                # label_res_rotate = label_res_rotate[inx]
+
                 time_elapsed = timer() - start
                 print("{} detection time : {:.4f} sec".format(img_path.split('/')[-1].split('.')[0], time_elapsed))
 
-                # if target_name == 'aircraft':
-                # img = cv2.imread(img_path)
-                # if len(img.shape) == 2:
-                #     img = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)
-                # elif len(img.shape) == 3:
-                #     img_gray = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-                #     img[:, :, 0] = img[:, :, 1] = img[:, :, 2] = img_gray
                 mkdir(des_folder)
                 img_np = draw_box_cv(np.array(img, np.float32) - np.array([103.939, 116.779, 123.68]),
                                      boxes=np.array(box_res),
@@ -435,10 +244,6 @@ def detect_img(file_paths, des_folder, det_th, h_len, w_len, show_res=False):
                                                    scores=np.array(score_res_rotate))
                 cv2.imwrite(des_folder + '/{}_horizontal_fpn.jpg'.format(img_path.split('/')[-1].split('.')[0]), img_np)
                 cv2.imwrite(des_folder + '/{}_rotate_fpn.jpg'.format(img_path.split('/')[-1].split('.')[0]), img_np_rotate)
-                # clip_obj_imgs(src_img, box_res, label_res, score_res, des_folder)
-                # print(img_path)
-                # det_xml_path =img_path.replace(".tif", ".det.xml")
-                # obj_to_det_xml(img_path, box_res, label_res, score_res, det_xml_path)
 
             coord.request_stop()
             coord.join(threads)
@@ -465,6 +270,12 @@ def parse_args():
     parser.add_argument('--w_len', dest='w_len',
                         help='image width',
                         default=1000, type=int)
+    parser.add_argument('--h_overlap', dest='h_overlap',
+                        help='height overlap',
+                        default=600, type=int)
+    parser.add_argument('--w_overlap', dest='w_overlap',
+                        help='width overlap',
+                        default=1000, type=int)
     parser.add_argument('--image_ext', dest='image_ext',
                         help='image format',
                         default='.tif', type=str)
@@ -482,5 +293,6 @@ if __name__ == "__main__":
     print(args)
     file_paths = get_file_paths_recursive(args.src_folder, args.image_ext)
 
-    detect_img(file_paths, args.des_folder, args.det_th, args.h_len, args.w_len, False)
+    detect_img(file_paths, args.des_folder, args.det_th, args.h_len, args.w_len,
+               args.h_overlap, args.w_overlap, False)
 
