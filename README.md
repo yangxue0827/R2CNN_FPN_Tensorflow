@@ -5,6 +5,17 @@ You can refer to the papers [R2CNN Rotational Region CNN for Orientation Robust 
 Other rotation detection method reference [R-DFPN](https://github.com/yangxue0827/R-DFPN_FPN_Tensorflow) and [R2CNN_HEAD](https://github.com/yangxue0827/R2CNN_HEAD_FPN_Tensorflow)       
 If useful to you, please star to support my work. Thanks.    
 
+# Citing [R-DFPN](http://www.mdpi.com/2072-4292/10/1/132)
+
+If you find R-DFPN useful in your research, please consider citing:
+
+    @article{yangxue_r-dfpn:http://www.mdpi.com/2072-4292/10/1/132
+        Author = {Xue Yang, Hao Sun, Kun Fu, Jirui Yang, Xian Sun, Menglong Yan and Zhi Guo},
+        Title = {{R-DFPN}: Automatic Ship Detection in Remote Sensing Images from Google Earth of Complex Scenes Based on Multiscale Rotation Dense Feature Pyramid Networks},
+        Journal = {Published in remote sensing},
+        Year = {2018}
+    }  
+
 # Configuration Environment
 ubuntu(Encoding problems may occur on windows) + python2 + tensorflow1.2 + cv2 + cuda8.0 + GeForce GTX 1080     
 If you want to use cpu, you need to modify the parameters of NMS and IOU functions use_gpu = False  in cfgs.py     
