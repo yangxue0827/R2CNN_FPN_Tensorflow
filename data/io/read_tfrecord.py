@@ -11,9 +11,10 @@ from data.io import image_preprocess
 
 def read_single_example_and_decode(filename_queue):
 
-    tfrecord_options = tf.python_io.TFRecordOptions(tf.python_io.TFRecordCompressionType.ZLIB)
+    # tfrecord_options = tf.python_io.TFRecordOptions(tf.python_io.TFRecordCompressionType.ZLIB)
 
-    reader = tf.TFRecordReader(options=tfrecord_options)
+    # reader = tf.TFRecordReader(options=tfrecord_options)
+    reader = tf.TFRecordReader()
 
     _, serialized_example = reader.read(filename_queue)
 

@@ -77,9 +77,9 @@ def convert_pascal_to_tfrecord():
     save_path = FLAGS.save_dir + FLAGS.dataset + '_' + FLAGS.save_name + '.tfrecord'
     mkdir(FLAGS.save_dir)
 
-    writer_options = tf.python_io.TFRecordOptions(tf.python_io.TFRecordCompressionType.ZLIB)
-    writer = tf.python_io.TFRecordWriter(path=save_path, options=writer_options)
-
+    # writer_options = tf.python_io.TFRecordOptions(tf.python_io.TFRecordCompressionType.ZLIB)
+    # writer = tf.python_io.TFRecordWriter(path=save_path, options=writer_options)
+    writer = tf.python_io.TFRecordWriter(path=save_path)
     for count, xml in enumerate(glob.glob(xml_path + '/*.xml')):
         # to avoid path error in different development platform
         xml = xml.replace('\\', '/')
