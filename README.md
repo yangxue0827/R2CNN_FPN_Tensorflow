@@ -113,8 +113,8 @@ elif you want to train R2CNN:
 ![04](graph.png) 
 
 # icdar2015 test results      
-![25](tools/test_result/img_108.jpg_fpn.jpg)     
-![26](tools/test_result/img_108.jpg_fpn.jpg)    
+![19](tools/test_result/img_108.jpg_horizontal_fpn.jpg)     
+![20](tools/test_result/img_108.jpg_rotate_fpn.jpg)    
 
 ![21](tools/test_result/img_51.jpg_horizontal_fpn.jpg)     
 ![22](tools/test_result/img_51.jpg_rotate_fpn.jpg)    
