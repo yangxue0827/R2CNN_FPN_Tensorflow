@@ -65,7 +65,7 @@ elif you want to test R2CNN:
   ```Shell    
   python inference1.py   
   ```   
-6、big image      
+6、large image      
   ```Shell    
   cd $FPN_ROOT/tools
   python demo.py(demo1.py) --src_folder=.\demo_src --des_folder=.\demo_des         
@@ -112,7 +112,17 @@ elif you want to train R2CNN:
 # Graph
 ![04](graph.png) 
 
-# Test results   
+# icdar2015 test results      
+![19](tools/test_result/img_108.jpg_fpn.jpg)     
+![20](tools/test_result/img_108.jpg_fpn.jpg)    
+
+![21](tools/test_result/img_51.jpg_horizontal_fpn.jpg)     
+![22](tools/test_result/img_51.jpg_rotate_fpn.jpg)    
+
+![23](tools/test_result/img_403.jpg_horizontal_fpn.jpg)     
+![24](tools/test_result/img_403.jpg_rotate_fpn.jpg)    
+
+# Test results     
 ![11](tools/test_result/07_horizontal_gt.jpg)   
 ![12](tools/test_result/07_horizontal_fpn.jpg)   
      

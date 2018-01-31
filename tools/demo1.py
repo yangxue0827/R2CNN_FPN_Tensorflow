@@ -224,11 +224,11 @@ def detect_img(file_paths, des_folder, det_th, h_len, w_len, h_overlap, w_overla
                                 label_res_rotate.append(labels_rotate[ii])
                                 score_res_rotate.append(scores_rotate[ii])
 
-                # inx = nms_rotate.nms_rotate_cpu(boxes=box_res_rotate, scores=score_res_rotate,
+                # inx = nms_rotate.nms_rotate_cpu(boxes=np.array(box_res_rotate), scores=np.array(score_res_rotate),
                 #                                 iou_threshold=0.5, max_output_size=100)
-                # box_res_rotate = box_res_rotate[inx]
-                # score_res_rotate = score_res_rotate[inx]
-                # label_res_rotate = label_res_rotate[inx]
+                # box_res_rotate = np.array(box_res_rotate)[inx]
+                # score_res_rotate = np.array(score_res_rotate)[inx]
+                # label_res_rotate = np.array(label_res_rotate)[inx]
 
                 time_elapsed = timer() - start
                 print("{} detection time : {:.4f} sec".format(img_path.split('/')[-1].split('.')[0], time_elapsed))
@@ -272,10 +272,10 @@ def parse_args():
                         default=1000, type=int)
     parser.add_argument('--h_overlap', dest='h_overlap',
                         help='height overlap',
-                        default=600, type=int)
+                        default=0, type=int)
     parser.add_argument('--w_overlap', dest='w_overlap',
                         help='width overlap',
-                        default=1000, type=int)
+                        default=0, type=int)
     parser.add_argument('--image_ext', dest='image_ext',
                         help='image format',
                         default='.tif', type=str)
