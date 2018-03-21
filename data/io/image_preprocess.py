@@ -49,20 +49,24 @@ def short_side_resize_for_inference_data(img_tensor, target_shortside_len, is_re
     return img_tensor  # [1, h, w, c]
 
 
+def flip_left_right(img_tensor, gtboxes_and_label):
+    h, w = tf.shape(img_tensor)[0], tf.shape(img_tensor)[1]
+    img_tensor = tf.image.flip_left_right(img_tensor)
+
+    x1, y1, x2, y2, x3, y3, x4, y4, label = tf.unstack(gtboxes_and_label, axis=1)
+    new_x1 = w - x1
+    new_x2 = w - x2
+    new_x3 = w - x3
+    new_x4 = w - x4
+    return img_tensor, tf.transpose(tf.stack([new_x1, y1, new_x2, y2, new_x3, y3, new_x4, y4, label], axis=0))
+
+
 def random_flip_left_right(img_tensor, gtboxes_and_label):
 
-    h, w = tf.shape(img_tensor)[0], tf.shape(img_tensor)[1]
-    coin = np.random.rand()
-    if coin > 0.5:
-        img_tensor = tf.image.flip_left_right(img_tensor)
+    img_tensor, gtboxes_and_label = tf.cond(tf.less(tf.random_uniform(shape=[], minval=0, maxval=1), 0.5),
+                                            lambda: flip_left_right(img_tensor, gtboxes_and_label),
+                                            lambda: (img_tensor, gtboxes_and_label))
 
-        x1, y1, x2, y2, x3, y3, x4, y4, label = tf.unstack(gtboxes_and_label, axis=1)
-        new_x1 = w - x1
-        new_x2 = w - x2
-        new_x3 = w - x3
-        new_x4 = w - x4
-        return img_tensor, tf.transpose(tf.stack([new_x1, y1, new_x2, y2, new_x3, y3, new_x4, y4, label], axis=0))
-    else:
-        return img_tensor,  gtboxes_and_label
+    return img_tensor,  gtboxes_and_label
 
 
