@@ -1,0 +1,36 @@
+<annotation>
+    <folder>xxx</folder>
+    <filename>sample.tif</filename>
+    <source>
+        <database>xxxx</database>
+        <annotation>xxxx</annotation>
+        <image>xxxx</image>
+        <flickrid>0</flickrid>
+    </source>
+    <owner>
+        <flickrid>xxxx</flickrid>
+        <name>xxxx</name>
+    </owner>
+    <size>
+        <width>1000</width>
+        <height>600</height>
+        <depth>3</depth>
+    </size>
+    <segmented>0</segmented>
+    <object>
+        <name>ship</name>
+        <pose>Unknown</pose>
+        <truncated>1</truncated>
+        <difficult>0</difficult>
+        <bndbox>
+            <x0>665</x0>
+            <y0>572</y0>
+            <x1>527</x1>
+            <y1>529</y1>
+            <x2>695</x2>
+            <y2>2</y2>
+            <x3>832</x3>
+            <y3>45</y3>
+        </bndbox>
+    </object>
+</annotation>
