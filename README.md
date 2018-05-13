@@ -1,5 +1,7 @@
 # R2CNN: Rotational Region CNN for Orientation Robust Scene Detection
 
+# Some popular new re-implementation detectors (Faster-RCNN, FPN, R2CNN, RRPN, R-DFPN etc) will be upload in https://github.com/DetectionTeamUCAS soon and be evaluated in common data sets (VOC pascal, icdar). Stay tuned!     
+
 A Tensorflow implementation of FPN or R2CNN detection framework based on [FPN](https://github.com/yangxue0827/FPN_Tensorflow).  
 You can refer to the papers [R2CNN Rotational Region CNN for Orientation Robust Scene Text Detection](https://arxiv.org/abs/1706.09579) or [Feature Pyramid Networks for Object Detection](https://arxiv.org/abs/1612.03144)    
 Other rotation detection method reference [R-DFPN](https://github.com/yangxue0827/R-DFPN_FPN_Tensorflow), [RRPN](https://github.com/yangJirui/RRPN_FPN_Tensorflow) and [R2CNN_HEAD](https://github.com/yangxue0827/R2CNN_HEAD_FPN_Tensorflow)       
@@ -54,21 +56,15 @@ Clone the repository
   ```Shell    
   cd $R2CNN_ROOT/tools      
   ```    
-5、image slice      
-If you want to test [FPN](https://github.com/yangxue0827/FPN_Tensorflow) :        
-  ```Shell    
-  python inference.py   
-  ```    
-
-elif you want to test R2CNN:   
-  
+5、image slice        
   ```Shell    
   python inference1.py   
-  ```   
+  ```      
+      
 6、large image      
   ```Shell    
   cd $FPN_ROOT/tools
-  python demo.py(demo1.py) --src_folder=.\demo_src --des_folder=.\demo_des         
+  python demo1.py --src_folder=.\demo_src --des_folder=.\demo_des         
   ```   
 
 # Train   
@@ -78,7 +74,7 @@ elif you want to test R2CNN:
   ```Shell    
   cd $R2CNN_ROOT/tools      
   ``` 
-4、Choose a model([FPN](https://github.com/yangxue0827/FPN_Tensorflow)  and R2CNN)     
+4、Choose a model([FPN](https://github.com/yangxue0827/FPN_Tensorflow) or R2CNN)     
 If you want to train [FPN](https://github.com/yangxue0827/FPN_Tensorflow) :        
   ```Shell    
   python train.py   
