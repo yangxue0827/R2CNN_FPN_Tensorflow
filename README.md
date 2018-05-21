@@ -1,6 +1,6 @@
 # R2CNN: Rotational Region CNN for Orientation Robust Scene Detection
 
-# Some popular new re-implementation detectors (Faster-RCNN, FPN, R2CNN, RRPN, R-DFPN etc) will be upload in https://github.com/DetectionTeamUCAS soon and be evaluated in common data sets (VOC pascal, icdar). Stay tuned!     
+# We modified the R2CNN to make its performance more robust and excellent, and achieved better performance in the DOTA dataset. The code will be updated in https://github.com/DetectionTeamUCAS soon and be evaluated in common data sets (VOC pascal, icdar). Stay tuned!     
 
 A Tensorflow implementation of FPN or R2CNN detection framework based on [FPN](https://github.com/yangxue0827/FPN_Tensorflow).  
 You can refer to the papers [R2CNN Rotational Region CNN for Orientation Robust Scene Text Detection](https://arxiv.org/abs/1706.09579) or [Feature Pyramid Networks for Object Detection](https://arxiv.org/abs/1612.03144)    
