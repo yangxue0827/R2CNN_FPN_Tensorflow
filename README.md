@@ -1,6 +1,6 @@
 # R2CNN: Rotational Region CNN for Orientation Robust Scene Detection
 
-## Recommended improved code： https://github.com/DetectionTeamUCAS     
+## Recommend improved code： https://github.com/DetectionTeamUCAS     
 
 A Tensorflow implementation of FPN or R2CNN detection framework based on [FPN](https://github.com/yangxue0827/FPN_Tensorflow).  
 You can refer to the papers [R2CNN Rotational Region CNN for Orientation Robust Scene Text Detection](https://arxiv.org/abs/1706.09579) or [Feature Pyramid Networks for Object Detection](https://arxiv.org/abs/1612.03144)    
