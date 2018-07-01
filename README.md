@@ -1,13 +1,13 @@
 # R2CNN: Rotational Region CNN for Orientation Robust Scene Detection
 
-# We modified the R2CNN to make its performance more robust and excellent, and achieved better performance in the DOTA and icdar dataset. The code will be updated in https://github.com/DetectionTeamUCAS. Stay tuned!     
+## Recommended improved code： https://github.com/DetectionTeamUCAS     
 
 A Tensorflow implementation of FPN or R2CNN detection framework based on [FPN](https://github.com/yangxue0827/FPN_Tensorflow).  
 You can refer to the papers [R2CNN Rotational Region CNN for Orientation Robust Scene Text Detection](https://arxiv.org/abs/1706.09579) or [Feature Pyramid Networks for Object Detection](https://arxiv.org/abs/1612.03144)    
 Other rotation detection method reference [R-DFPN](https://github.com/yangxue0827/R-DFPN_FPN_Tensorflow), [RRPN](https://github.com/yangJirui/RRPN_FPN_Tensorflow) and [R2CNN_HEAD](https://github.com/yangxue0827/R2CNN_HEAD_FPN_Tensorflow)       
 If useful to you, please star to support my work. Thanks.    
 
-# Citing [R-DFPN](http://www.mdpi.com/2072-4292/10/1/132)
+## Citing [R-DFPN](http://www.mdpi.com/2072-4292/10/1/132)
 
 If you find R-DFPN useful in your research, please consider citing:
 
@@ -18,29 +18,29 @@ If you find R-DFPN useful in your research, please consider citing:
         Year = {2018}
     }  
 
-# Configuration Environment
+## Configuration Environment
 ubuntu(Encoding problems may occur on windows) + python2 + tensorflow1.2 + cv2 + cuda8.0 + GeForce GTX 1080     
 If you want to use cpu, you need to modify the parameters of NMS and IOU functions use_gpu = False  in cfgs.py     
 You can also use docker environment, command: docker pull yangxue2docker/tensorflow3_gpu_cv2_sshd:v1.0    
 
-# Installation      
+## Installation      
   Clone the repository    
   ```Shell    
   git clone https://github.com/yangxue0827/R2CNN_FPN_Tensorflow.git    
   ```     
 
-# Make tfrecord   
-The image name is best in English.    
-The data is VOC format, reference [here](sample.xml)     
-data path format  ($R2CNN_ROOT/data/io/divide_data.py)    
-VOCdevkit  
->VOCdevkit_train  
->>Annotation  
->>JPEGImages   
-
->VOCdevkit_test   
->>Annotation   
->>JPEGImages   
+## Make tfrecord   
+The data is VOC format, reference [here](sample.xml)       
+Data path format  ($R2CNN_ROOT/data/io/divide_data.py)    
+```
+├── VOCdevkit
+│   ├── VOCdevkit_train
+│       ├── Annotation
+│       ├── JPEGImages
+│    ├── VOCdevkit_test
+│       ├── Annotation
+│       ├── JPEGImages
+```  
 
 Clone the repository    
   ```Shell    
@@ -48,7 +48,7 @@ Clone the repository
   python convert_data_to_tfrecord.py --VOC_dir='***/VOCdevkit/VOCdevkit_train/' --save_name='train' --img_format='.jpg' --dataset='ship'
        
   ``` 
-# Demo   
+##Demo   
 1、Unzip the weight $R2CNN_ROOT/output/res101_trained_weights/*.rar    
 2、put images in $R2CNN_ROOT/tools/inference_image   
 3、Configure parameters in $R2CNN_ROOT/libs/configs/cfgs.py and modify the project's root directory    
@@ -67,7 +67,7 @@ Clone the repository
   python demo1.py --src_folder=.\demo_src --des_folder=.\demo_des         
   ```   
 
-# Train   
+## Train   
 1、Modify $R2CNN_ROOT/libs/lable_name_dict/***_dict.py, corresponding to the number of categories in the configuration file    
 2、download pretrain weight([resnet_v1_101_2016_08_28.tar.gz](http://download.tensorflow.org/models/resnet_v1_101_2016_08_28.tar.gz) or [resnet_v1_50_2016_08_28.tar.gz](http://download.tensorflow.org/models/resnet_v1_50_2016_08_28.tar.gz)) from [here](https://github.com/yangxue0827/models/tree/master/slim), then extract to folder $R2CNN_ROOT/data/pretrained_weights    
 3、  
@@ -85,19 +85,19 @@ elif you want to train R2CNN:
   python train1.py   
   ``` 
 
-# Test tfrecord     
+## Test tfrecord     
   ```Shell    
   cd $R2CNN_ROOT/tools   
   python test.py(test1.py)   
   ```    
 
-# eval   
+## eval(Not recommended, Please refer [here](https://github.com/DetectionTeamUCAS)    
   ```Shell    
   cd $R2CNN_ROOT/tools   
   python eval.py(eval1.py)  
   ```  
 
-# Summary    
+## Summary    
   ```Shell    
   tensorboard --logdir=$R2CNN_ROOT/output/res101_summary/ 
   ```     
@@ -105,10 +105,10 @@ elif you want to train R2CNN:
 ![02](output/res101_summary/rpn_loss.bmp) 
 ![03](output/res101_summary/total_loss.bmp) 
 
-# Graph
+## Graph
 ![04](graph.png) 
 
-# icdar2015 test results      
+## icdar2015 test results      
 ![19](tools/test_result/img_108.jpg_horizontal_fpn.jpg)     
 ![20](tools/test_result/img_108.jpg_rotate_fpn.jpg)    
 
@@ -118,7 +118,7 @@ elif you want to train R2CNN:
 ![23](tools/test_result/img_403.jpg_horizontal_fpn.jpg)     
 ![24](tools/test_result/img_403.jpg_rotate_fpn.jpg)    
 
-# Test results     
+## Test results     
 ![11](tools/test_result/07_horizontal_gt.jpg)   
 ![12](tools/test_result/07_horizontal_fpn.jpg)   
      
