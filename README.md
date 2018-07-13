@@ -1,4 +1,4 @@
-# R2CNN: Rotational Region CNN for Orientation Robust Scene Detection
+# R2CNN: Rotational Region CNN for Orientation Robust Scene Text Detection
 
 ## Recommend improved code： https://github.com/DetectionTeamUCAS     
 
