@@ -48,6 +48,13 @@ Clone the repository
   python convert_data_to_tfrecord.py --VOC_dir='***/VOCdevkit/VOCdevkit_train/' --save_name='train' --img_format='.jpg' --dataset='ship'
        
   ``` 
+
+## Compile
+```  
+cd $PATH_ROOT/libs/box_utils/
+python setup.py build_ext --inplace
+```
+
 ##Demo   
 1、Unzip the weight $R2CNN_ROOT/output/res101_trained_weights/*.rar    
 2、put images in $R2CNN_ROOT/tools/inference_image   
@@ -74,7 +81,7 @@ Clone the repository
   ```Shell    
   cd $R2CNN_ROOT/tools      
   ``` 
-4、Choose a model([FPN](https://github.com/yangxue0827/FPN_Tensorflow) or R2CNN)     
+4、Choose a model([FPN](https://github.com/yangxue0827/FPN_Tensorflow) or R2CNN))     
 If you want to train [FPN](https://github.com/yangxue0827/FPN_Tensorflow) :        
   ```Shell    
   python train.py   
