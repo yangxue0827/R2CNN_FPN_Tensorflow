@@ -7,16 +7,21 @@ You can refer to the papers [R2CNN Rotational Region CNN for Orientation Robust 
 Other rotation detection method reference [R-DFPN](https://github.com/yangxue0827/R-DFPN_FPN_Tensorflow), [RRPN](https://github.com/yangJirui/RRPN_FPN_Tensorflow) and [R2CNN_HEAD](https://github.com/yangxue0827/R2CNN_HEAD_FPN_Tensorflow)       
 If useful to you, please star to support my work. Thanks.    
 
-## Citing [R-DFPN](http://www.mdpi.com/2072-4292/10/1/132)
+## Citation
+Some relevant achievements based on this code.     
 
-If you find R-DFPN useful in your research, please consider citing:
-
-    @article{yangxue_r-dfpn:http://www.mdpi.com/2072-4292/10/1/132
+    @article{https://ieeexplore.ieee.org/document/8464244 or https://arxiv.org/abs/1806.04828
+        Author = {Xue Yang, Hao Sun, Xian Sun, Menglong Yan, Zhi Guo, Kun Fu},
+        Title = {Position Detection and Direction Prediction for Arbitrary-Oriented Ships via Multitask Rotation Region Convolutional Neural Network},
+        Year = {2018}
+    } 
+    
+    @article{yangxue_r-dfpn:http://www.mdpi.com/2072-4292/10/1/132 or https://arxiv.org/abs/1806.04331
         Author = {Xue Yang, Hao Sun, Kun Fu, Jirui Yang, Xian Sun, Menglong Yan and Zhi Guo},
         Title = {{R-DFPN}: Automatic Ship Detection in Remote Sensing Images from Google Earth of Complex Scenes Based on Multiscale Rotation Dense Feature Pyramid Networks},
         Journal = {Published in remote sensing},
         Year = {2018}
-    }  
+    } 
 
 ## Configuration Environment
 ubuntu(Encoding problems may occur on windows) + python2 + tensorflow1.2 + cv2 + cuda8.0 + GeForce GTX 1080     
