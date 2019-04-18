@@ -137,7 +137,11 @@ def train():
         # train
         total_loss = slim.losses.get_total_loss()
 
-        global_step = slim.get_or_create_global_step()
+        if(tf.__version__.startswith("1.") and int(tf.__version__.split(".")[1])<=3) or tf.__version__.startswith("0."):
+            ### for tf version <=1.3.0
+            global_step = slim.get_or_create_global_step()
+        else: ### for tf version >=1.4.0
+            global_step = tf.train.get_or_create_global_step()
 
         lr = tf.train.piecewise_constant(global_step,
                                          boundaries=[np.int64(20000), np.int64(40000)],

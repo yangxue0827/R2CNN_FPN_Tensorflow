@@ -25,7 +25,11 @@ def get_restorer():
         if RESTORE_FROM_RPN:
             print('___restore from rpn___')
             model_variables = slim.get_model_variables()
-            restore_variables = [var for var in model_variables if not var.name.startswith('Fast_Rcnn')] + [slim.get_or_create_global_step()]
+            if(tf.__version__.startswith("1.") and int(tf.__version__.split(".")[1])<=3) or tf.__version__.startswith("0."):
+                ### for tf version <=1.3.0
+                restore_variables = [var for var in model_variables if not var.name.startswith('Fast_Rcnn')] + [slim.get_or_create_global_step()]
+            else: ### for tf version >=1.4.0
+                restore_variables = [var for var in model_variables if not var.name.startswith('Fast_Rcnn')] + [tf.train.get_or_create_global_step()]
             for var in restore_variables:
                 print(var.name)
             restorer = tf.train.Saver(restore_variables)
