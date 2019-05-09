@@ -14,7 +14,8 @@ from help_utils.help_utils import print_tensors
 import numpy as np
 
 DEBUG = False
-
+tf_major_ver = int(tf.__version__.split(".")[0])
+tf_minor_ver = int(tf.__version__.split(".")[1])
 
 class FastRCNN(object):
     def __init__(self,
@@ -133,9 +134,12 @@ class FastRCNN(object):
                                                [self.roi_pool_kernel_size, self.roi_pool_kernel_size],
                                                stride=self.roi_pool_kernel_size)
                 all_level_roi_list.append(level_i_rois)
-
-            all_level_rois = tf.concat(all_level_roi_list, axis=0)
-            all_level_proposals = tf.concat(all_level_proposal_list, axis=0)
+            if(tf_major_ver<1):
+                all_level_rois = tf.concat(all_level_roi_list, concat_dim=0)
+                all_level_proposals = tf.concat(all_level_proposal_list, concat_dim=0)
+            else:
+                all_level_rois = tf.concat(all_level_roi_list, axis=0)
+                all_level_proposals = tf.concat(all_level_proposal_list, axis=0)
 
             return all_level_rois, all_level_proposals
 
@@ -219,8 +223,11 @@ class FastRCNN(object):
 
             negative_indices = tf.random_shuffle(negative_indices)
             negative_indices = tf.slice(negative_indices, begin=[0], size=[num_of_negatives])
-
-            minibatch_indices = tf.concat([positive_indices, negative_indices], axis=0)
+            
+            if(tf_major_ver<1):
+              minibatch_indices = tf.concat([positive_indices, negative_indices], concat_dim=0)
+            else:
+              minibatch_indices = tf.concat([positive_indices, negative_indices], axis=0)
             minibatch_indices = tf.random_shuffle(minibatch_indices)
 
             minibatch_reference_boxes_mattached_gtboxes = tf.gather(reference_boxes_mattached_gtboxes,
@@ -259,7 +266,10 @@ class FastRCNN(object):
                 tmp_class_weights = tf.ones(shape=[tf.shape(minibatch_encode_boxes)[0], 4], dtype=tf.float32)
                 tmp_class_weights = tmp_class_weights * tf.expand_dims(category_list[i], axis=1)
                 class_weights_list.append(tmp_class_weights)
-            class_weights = tf.concat(class_weights_list, axis=1)  # [minibatch_size, num_classes*4]
+            if(tf_major_ver<1):
+                class_weights = tf.concat(class_weights_list, concat_dim=1)  # [minibatch_size, num_classes*4]
+            else:
+                class_weights = tf.concat(class_weights_list, axis=1)  # [minibatch_size, num_classes*4]
 
             # loss
             with tf.variable_scope('fast_rcnn_classification_loss'):
@@ -312,10 +322,15 @@ class FastRCNN(object):
                 tmp_category = tf.gather(category, valid_indices)
 
                 category_list.append(tmp_category)
+            if(tf_major_ver<1):
+                all_nms_boxes = tf.concat(after_nms_boxes, concat_dim=0)
+                all_nms_scores = tf.concat(after_nms_scores, concat_dim=0)
+                all_category = tf.concat(category_list, concat_dim=0)
+            else:
+                all_nms_boxes = tf.concat(after_nms_boxes, axis=0)
+                all_nms_scores = tf.concat(after_nms_scores, axis=0)
+                all_category = tf.concat(category_list, axis=0)
 
-            all_nms_boxes = tf.concat(after_nms_boxes, axis=0)
-            all_nms_scores = tf.concat(after_nms_scores, axis=0)
-            all_category = tf.concat(category_list, axis=0)
 
             all_nms_boxes = boxes_utils.clip_boxes_to_img_boundaries(all_nms_boxes,
                                                                      img_shape=self.img_shape)

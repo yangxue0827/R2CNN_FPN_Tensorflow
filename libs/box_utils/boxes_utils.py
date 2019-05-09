@@ -7,6 +7,8 @@ from __future__ import print_function
 import tensorflow as tf
 from libs.box_utils.coordinate_convert import forward_convert
 
+tf_major_ver = int(tf.__version__.split(".")[0])
+tf_minor_ver = int(tf.__version__.split(".")[1])
 
 def clip_boxes_to_img_boundaries(decode_boxes, img_shape):
     '''
@@ -88,10 +90,12 @@ def padd_boxes_with_zeros(boxes, scores, max_num_of_boxes):
 
     zero_boxes = tf.zeros(shape=[pad_num, 4], dtype=boxes.dtype)
     zero_scores = tf.zeros(shape=[pad_num], dtype=scores.dtype)
-
-    final_boxes = tf.concat([boxes, zero_boxes], axis=0)
-
-    final_scores = tf.concat([scores, zero_scores], axis=0)
+    if(tf_major_ver<1):
+        final_boxes = tf.concat([boxes, zero_boxes], concat_dim=0)
+        final_scores = tf.concat([scores, zero_scores], concat_dim=0)
+    else:
+        final_boxes = tf.concat([boxes, zero_boxes], axis=0)
+        final_scores = tf.concat([scores, zero_scores], axis=0)
 
     return final_boxes, final_scores
 
