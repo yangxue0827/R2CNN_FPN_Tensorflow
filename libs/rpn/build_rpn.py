@@ -16,6 +16,8 @@ from libs.box_utils.show_box_in_tensor import draw_box_with_color
 from libs.losses import losses
 from help_utils.help_utils import print_tensors
 DEBUG = True
+tf_major_ver = int(tf.__version__.split(".")[0])
+tf_minor_ver = int(tf.__version__.split(".")[1])
 
 
 class RPN(object):
@@ -140,8 +142,10 @@ class RPN(object):
                         p_sub = tf.image.resize_nearest_neighbor(p_temp, [up_sample_shape[1], up_sample_shape[2]],
                                                                  name='build_P%d/up_sample_nearest_neighbor' % layer)
                         p_concat.append(p_sub)
-
-                    p = tf.concat(p_concat, axis=3)
+                    if(tf_major_ver < 1):
+                        p = tf.concat(p_concat,concat_dim=3)
+                    else:
+                        p = tf.concat(p_concat, axis=3)
 
                     p_conv = slim.conv2d(p, 256, kernel_size=[3, 3], stride=[1, 1],
                                          padding='SAME', scope='build_P%d/avoid_aliasing' % layer)
@@ -211,8 +215,10 @@ class RPN(object):
                                                            name='make_anchors_{}'.format(level))
                     tmp_anchors = tf.reshape(tmp_anchors, [-1, 4])
                     anchor_list.append(tmp_anchors)
-
-                all_level_anchors = tf.concat(anchor_list, axis=0)
+                if(tf_major_ver < 1):
+                    all_level_anchors = tf.concat(anchor_list, concat_dim=0)
+                else:
+                    all_level_anchors = tf.concat(anchor_list, axis=0)
             return all_level_anchors
 
     def rpn_net(self):
@@ -256,9 +262,12 @@ class RPN(object):
 
                     rpn_scores_list.append(rpn_box_scores)
                     rpn_encode_boxes_list.append(rpn_encode_boxes)
-
-                rpn_all_encode_boxes = tf.concat(rpn_encode_boxes_list, axis=0)
-                rpn_all_boxes_scores = tf.concat(rpn_scores_list, axis=0)
+                if(tf_major_ver<1):
+                    rpn_all_encode_boxes = tf.concat(rpn_encode_boxes_list, concat_dim=0)
+                    rpn_all_boxes_scores = tf.concat(rpn_scores_list, concat_dim=0)
+                else:
+                    rpn_all_encode_boxes = tf.concat(rpn_encode_boxes_list, axis=0)
+                    rpn_all_boxes_scores = tf.concat(rpn_scores_list, axis=0)
 
             return rpn_all_encode_boxes, rpn_all_boxes_scores
 
@@ -366,8 +375,10 @@ class RPN(object):
 
             negatives_indices = tf.random_shuffle(negatives_indices)
             negatives_indices = tf.slice(negatives_indices, begin=[0], size=[num_of_negatives])
-
-            minibatch_indices = tf.concat([positive_indices, negatives_indices], axis=0)
+            if(tf_major_ver<1):
+                minibatch_indices = tf.concat([positive_indices, negatives_indices], concat_dim=0)
+            else:
+                minibatch_indices = tf.concat([positive_indices, negatives_indices], axis=0)
             minibatch_indices = tf.random_shuffle(minibatch_indices)
 
             minibatch_anchor_matched_gtboxes = tf.gather(anchor_matched_gtboxes, minibatch_indices)
