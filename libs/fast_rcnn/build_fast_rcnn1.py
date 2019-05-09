@@ -141,8 +141,8 @@ class FastRCNN(object):
                 all_level_rois = tf.concat(all_level_roi_list, concat_dim=0)
                 all_level_proposals = tf.concat(all_level_proposal_list, concat_dim=0)
             else:
-                all_level_rois = tf.concat(all_level_roi_list, concat_dim=0)
-                all_level_proposals = tf.concat(all_level_proposal_list, concat_dim=0)
+                all_level_rois = tf.concat(all_level_roi_list, axis=0)
+                all_level_proposals = tf.concat(all_level_proposal_list, axis=0)
             return all_level_rois, all_level_proposals
 
     def fast_rcnn_net(self):
