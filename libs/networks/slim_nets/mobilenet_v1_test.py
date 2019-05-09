@@ -401,7 +401,7 @@ class MobilenetV1Test(tf.test.TestCase):
 
     with self.test_session() as sess:
       if(tf_major_ver==0 and tf_minor_ver<12):
-        tf.initialize_all_variables().run()
+        sess.run(tf.initialize_all_variables())
       else:
         sess.run(tf.global_variables_initializer())
       output = sess.run(logits, {inputs: images.eval()})
@@ -440,7 +440,7 @@ class MobilenetV1Test(tf.test.TestCase):
 
     with self.test_session() as sess:
       if(tf_major_ver==0 and tf_minor_ver<12):
-        tf.initialize_all_variables().run()
+        sess.run(tf.initialize_all_variables())
       else:
         sess.run(tf.global_variables_initializer())
       output = sess.run(predictions)
