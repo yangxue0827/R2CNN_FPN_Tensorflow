@@ -13,7 +13,8 @@ from PIL import Image
 from libs.configs import cfgs
 
 VGG_MEAN = [103.939, 116.779, 123.68]
-
+tf_major_ver = int(tf.__version__.split(".")[0])
+tf_minor_ver = int(tf.__version__.split(".")[1])
 
 class Vgg16:
     def __init__(self, vgg16_npy_path=cfgs.VGG16_WEIGHT_PATH):
@@ -72,18 +73,29 @@ class Vgg16:
         if rgb2gbr:
             # Convert RGB to BGR
             red, green, blue = tf.split(self.color, num_or_size_splits=3, axis=3)
-            self.color = tf.concat([blue - VGG_MEAN[0],
-                                    green - VGG_MEAN[1],
-                                    red - VGG_MEAN[2]], axis=3)
+            if(tf_major_ver<1):
+                self.color = tf.concat([blue - VGG_MEAN[0],
+                                        green - VGG_MEAN[1],
+                                        red - VGG_MEAN[2]], concat_dim=3)
+            else:
+                self.color = tf.concat([blue - VGG_MEAN[0],
+                                        green - VGG_MEAN[1],
+                                        red - VGG_MEAN[2]], axis=3)
+                                
             self.conv1_1 = self.conv_op(input_op=self.color, name="conv1_1", kh=3, kw=3,
                                         n_out=64, dh=1, dw=1)
 
         else:
 
             blue, green, red = tf.split(self.color, num_or_size_splits=3, axis=3)
-            self.color = tf.concat([blue - VGG_MEAN[0],
-                                    green - VGG_MEAN[1],
-                                    red - VGG_MEAN[2]], axis=3)
+            if(tf_major_ver<1):
+                self.color = tf.concat([blue - VGG_MEAN[0],
+                                        green - VGG_MEAN[1],
+                                        red - VGG_MEAN[2]], concat_dim=3)
+            else:
+                self.color = tf.concat([blue - VGG_MEAN[0],
+                                        green - VGG_MEAN[1],
+                                        red - VGG_MEAN[2]], axis=3)
             self.conv1_1 = self.conv_op(input_op=self.color, name="conv1_1", kh=3, kw=3,
                                         n_out=64, dh=1, dw=1)
 

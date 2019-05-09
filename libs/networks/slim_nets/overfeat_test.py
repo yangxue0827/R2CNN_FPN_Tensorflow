@@ -22,7 +22,8 @@ import tensorflow as tf
 from nets import overfeat
 
 slim = tf.contrib.slim
-
+tf_major_ver = int(tf.__version__.split(".")[0])
+tf_minor_ver = int(tf.__version__.split(".")[1])
 
 class OverFeatTest(tf.test.TestCase):
 
@@ -137,7 +138,10 @@ class OverFeatTest(tf.test.TestCase):
     with self.test_session() as sess:
       inputs = tf.random_uniform((batch_size, height, width, 3))
       logits, _ = overfeat.overfeat(inputs)
-      sess.run(tf.global_variables_initializer())
+      if(tf_major_ver==0 and tf_minor_ver<12):
+        sess.run(tf.initialize_all_variables())
+      else:
+        sess.run(tf.global_variables_initializer())
       output = sess.run(logits)
       self.assertTrue(output.any())
 

@@ -141,11 +141,20 @@ def eval_ship(img_num, mode):
         if mode == 0:
             fast_rcnn_decode_boxes_rotate = get_horizen_minAreaRectangle(fast_rcnn_decode_boxes_rotate, False)
 
+
         # train
-        init_op = tf.group(
-            tf.global_variables_initializer(),
-            tf.local_variables_initializer()
-        )
+        tf_major_ver = int(tf.__version__.split(".")[0])
+        tf_minor_ver = int(tf.__version__.split(".")[1])
+        if(tf_major_ver==0 and tf_minor_ver<12):
+            init_op = tf.group(
+                tf.initialize_all_variables(),
+                tf.initialize_local_variables()
+            )
+        else:
+            init_op = tf.group(
+                tf.global_variables_initializer(),
+                tf.local_variables_initializer()
+            )
 
         restorer, restore_ckpt = restore_model.get_restorer()
 

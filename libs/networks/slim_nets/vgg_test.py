@@ -22,7 +22,8 @@ import tensorflow as tf
 from nets import vgg
 
 slim = tf.contrib.slim
-
+tf_major_ver = int(tf.__version__.split(".")[0])
+tf_minor_ver = int(tf.__version__.split(".")[1])
 
 class VGGATest(tf.test.TestCase):
 
@@ -148,7 +149,10 @@ class VGGATest(tf.test.TestCase):
     with self.test_session() as sess:
       inputs = tf.random_uniform((batch_size, height, width, 3))
       logits, _ = vgg.vgg_a(inputs)
-      sess.run(tf.global_variables_initializer())
+      if(tf_major_ver==0 and tf_minor_ver<12):
+        sess.run(tf.initialize_all_variables())
+      else: 
+        sess.run(tf.global_variables_initializer())
       output = sess.run(logits)
       self.assertTrue(output.any())
 
@@ -292,7 +296,10 @@ class VGG16Test(tf.test.TestCase):
     with self.test_session() as sess:
       inputs = tf.random_uniform((batch_size, height, width, 3))
       logits, _ = vgg.vgg_16(inputs)
-      sess.run(tf.global_variables_initializer())
+      if(tf_major_ver==0 and tf_minor_ver<12):
+        sess.run(tf.initialize_all_variables())
+      else:
+        sess.run(tf.global_variables_initializer())
       output = sess.run(logits)
       self.assertTrue(output.any())
 
@@ -447,7 +454,10 @@ class VGG19Test(tf.test.TestCase):
     with self.test_session() as sess:
       inputs = tf.random_uniform((batch_size, height, width, 3))
       logits, _ = vgg.vgg_19(inputs)
-      sess.run(tf.global_variables_initializer())
+      if(tf_major_ver==0 and tf_minor_ver<12):
+        sess.run(tf.initialize_all_variables())
+      else:
+        sess.run(tf.global_variables_initializer())
       output = sess.run(logits)
       self.assertTrue(output.any())
 

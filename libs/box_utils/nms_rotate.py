@@ -11,6 +11,8 @@ import tensorflow as tf
 if cfgs.ROTATE_NMS_USE_GPU:
     from libs.box_utils.rotate_polygon_nms import rotate_gpu_nms
 
+tf_major_ver = int(tf.__version__.split(".")[0])
+tf_minor_ver = int(tf.__version__.split(".")[1])
 
 def nms_rotate(decode_boxes, scores, iou_threshold, max_output_size,
                use_angle_condition=False, angle_threshold=0, use_gpu=True, gpu_id=0):
@@ -29,11 +31,16 @@ def nms_rotate(decode_boxes, scores, iou_threshold, max_output_size,
                               angle_gap_threshold=angle_threshold,
                               use_angle_condition=use_angle_condition,
                               device_id=gpu_id)
-
-        keep = tf.cond(
-            tf.greater(tf.shape(keep)[0], max_output_size),
-            true_fn=lambda: tf.slice(keep, [0], [max_output_size]),
-            false_fn=lambda: keep)
+        if(tf_major_ver==1 and tf_minor_ver<2) or (tf_major_ver==0):
+            keep = tf.cond(
+                tf.greater(tf.shape(keep)[0], max_output_size),
+                fn1=lambda: tf.slice(keep, [0], [max_output_size]),
+                fn2=lambda: keep)
+        else:
+            keep = tf.cond(
+                tf.greater(tf.shape(keep)[0], max_output_size),
+                true_fn=lambda: tf.slice(keep, [0], [max_output_size]),
+                false_fn=lambda: keep)
 
     else:
         keep = tf.py_func(nms_rotate_cpu,
@@ -87,7 +94,12 @@ def nms_rotate_gpu(boxes_list, scores, iou_threshold, use_angle_condition=False,
     if use_angle_condition:
         y_c, x_c, h, w, theta = tf.unstack(boxes_list, axis=1)
         boxes_list = tf.transpose(tf.stack([x_c, y_c, w, h, theta]))
-        det_tensor = tf.concat([boxes_list, tf.expand_dims(scores, axis=1)], axis=1)
+        if(tf_major_ver<1):
+            det_tensor = tf.concat([boxes_list, tf.expand_dims(scores, axis=1)], concat_dim=1)
+        else:
+            det_tensor = tf.concat([boxes_list, tf.expand_dims(scores, axis=1)], axis=1)
+        
+
         keep = tf.py_func(rotate_gpu_nms,
                           inp=[det_tensor, iou_threshold, device_id],
                           Tout=tf.int64)
@@ -95,7 +107,11 @@ def nms_rotate_gpu(boxes_list, scores, iou_threshold, use_angle_condition=False,
     else:
         y_c, x_c, h, w, theta = tf.unstack(boxes_list, axis=1)
         boxes_list = tf.transpose(tf.stack([x_c, y_c, w, h, theta]))
-        det_tensor = tf.concat([boxes_list, tf.expand_dims(scores, axis=1)], axis=1)
+        if(tf_major_ver<1):
+            det_tensor = tf.concat([boxes_list, tf.expand_dims(scores, axis=1)], concat_dim=1)
+        else:
+            det_tensor = tf.concat([boxes_list, tf.expand_dims(scores, axis=1)], axis=1)
+        
         keep = tf.py_func(rotate_gpu_nms,
                           inp=[det_tensor, iou_threshold, device_id],
                           Tout=tf.int64)
