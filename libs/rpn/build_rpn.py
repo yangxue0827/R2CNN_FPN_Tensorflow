@@ -413,15 +413,23 @@ class RPN(object):
             minibatch_decode_boxes = encode_and_decode.decode_boxes(encode_boxes=minibatch_encode_boxes,
                                                                     reference_boxes=minibatch_anchors,
                                                                     scale_factors=self.scale_factors)
-
-            tf.summary.image('/positive_anchors', positive_anchors_in_img)
-            tf.summary.image('/negative_anchors', negative_anchors_in_img)
+            tf_major_ver = int(tf.__version__.split(".")[0])
+            tf_minor_ver = int(tf.__version__.split(".")[1])
+            if(tf_major_ver==0 and tf_minor_ver<12):
+                tf.image_summary('/positive_anchors', positive_anchors_in_img)
+                tf.image_summary('/negative_anchors', negative_anchors_in_img)
+            else:
+                tf.summary.image('/positive_anchors', positive_anchors_in_img)
+                tf.summary.image('/negative_anchors', negative_anchors_in_img)
             top_k_scores, top_k_indices = tf.nn.top_k(minibatch_boxes_scores[:, 1], k=5)
 
             top_detections_in_img = draw_box_with_color(self.img_batch,
                                                         tf.gather(minibatch_decode_boxes, top_k_indices),
                                                         text=tf.shape(top_k_scores)[0])
-            tf.summary.image('/top_5', top_detections_in_img)
+            if(tf_major_ver==0 and tf_minor_ver<12):
+                tf.image_summary('/top_5', top_detections_in_img)
+            else:
+                tf.summary.image('/top_5', top_detections_in_img)
 
             # losses
             with tf.variable_scope('rpn_location_loss'):

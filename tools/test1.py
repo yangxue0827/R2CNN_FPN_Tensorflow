@@ -113,11 +113,20 @@ def test(img_num):
         fast_rcnn_decode_boxes_rotate, fast_rcnn_score_rotate, num_of_objects_rotate, detection_category_rotate = \
             fast_rcnn.fast_rcnn_predict()
 
-        # train
-        init_op = tf.group(
-            tf.global_variables_initializer(),
-            tf.local_variables_initializer()
-        )
+        tf_major_ver = int(tf.__version__.split(".")[0])
+        tf_minor_ver = int(tf.__version__.split(".")[1])
+        if(tf_major_ver==0 and tf_minor_ver<12):
+            # train
+            init_op = tf.group(
+                tf.initialize_all_variables(),
+                tf.initialize_local_variables()
+            )
+        else:
+            # train
+            init_op = tf.group(
+                tf.global_variables_initializer(),
+                tf.local_variables_initializer()
+            )
 
         restorer, restore_ckpt = restore_model.get_restorer()
 

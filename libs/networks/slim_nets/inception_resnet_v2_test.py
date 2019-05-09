@@ -20,7 +20,8 @@ from __future__ import print_function
 import tensorflow as tf
 
 from nets import inception
-
+tf_major_ver = int(tf.__version__.split(".")[0])
+tf_minor_ver = int(tf.__version__.split(".")[1])
 
 class InceptionTest(tf.test.TestCase):
 
@@ -224,7 +225,10 @@ class InceptionTest(tf.test.TestCase):
       self.assertListEqual(logits.get_shape().as_list(),
                            [None, num_classes])
       images = tf.random_uniform((batch_size, height, width, 3))
-      sess.run(tf.global_variables_initializer())
+      if(tf_major_ver==0 and tf_minor_ver<12):
+        sess.run(tf.initialize_all_variables())
+      else:
+        sess.run(tf.global_variables_initializer())
       output = sess.run(logits, {inputs: images.eval()})
       self.assertEquals(output.shape, (batch_size, num_classes))
 
@@ -238,7 +242,10 @@ class InceptionTest(tf.test.TestCase):
                                                 num_classes,
                                                 is_training=False)
       predictions = tf.argmax(logits, 1)
-      sess.run(tf.global_variables_initializer())
+      if(tf_major_ver==0 and tf_minor_ver<12):
+        sess.run(tf.initialize_all_variables())
+      else:
+        sess.run(tf.global_variables_initializer())
       output = sess.run(predictions)
       self.assertEquals(output.shape, (batch_size,))
 
@@ -256,7 +263,10 @@ class InceptionTest(tf.test.TestCase):
                                                 is_training=False,
                                                 reuse=True)
       predictions = tf.argmax(logits, 1)
-      sess.run(tf.global_variables_initializer())
+      if(tf_major_ver==0 and tf_minor_ver<12):
+        sess.run(tf.initialize_all_variables())
+      else:
+        sess.run(tf.global_variables_initializer())
       output = sess.run(predictions)
       self.assertEquals(output.shape, (eval_batch_size,))
 

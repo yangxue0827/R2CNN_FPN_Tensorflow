@@ -111,12 +111,22 @@ def test(img_num):
                                              level=cfgs.LEVEL)
 
         fast_rcnn_decode_boxes, fast_rcnn_score, num_of_objects, detection_category = fast_rcnn.fast_rcnn_predict()
+        
+        tf_major_ver = int(tf.__version__.split(".")[0])
+        tf_minor_ver = int(tf.__version__.split(".")[1])
+        if(tf_major_ver==0 and tf_minor_ver<12):
+            # train
+            init_op = tf.group(
+                tf.initialize_all_variables(),
+                tf.initialize_local_variables()
+            )
+        else:
+            # train
+            init_op = tf.group(
+                tf.global_variables_initializer(),
+                tf.local_variables_initializer()
+            )
 
-        # train
-        init_op = tf.group(
-            tf.global_variables_initializer(),
-            tf.local_variables_initializer()
-        )
 
         restorer, restore_ckpt = restore_model.get_restorer()
 

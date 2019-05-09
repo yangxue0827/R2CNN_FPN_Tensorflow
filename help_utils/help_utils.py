@@ -167,4 +167,9 @@ def print_tensors(tensor, tensor_name):
     result = tf.reshape(result, tf.shape(tensor))
     result = tf.cast(result, tf.float32)
     sum_ = tf.reduce_sum(result)
-    tf.summary.scalar('print_s/{}'.format(tensor_name), sum_)
+    tf_major_ver = int(tf.__version__.split(".")[0])
+    tf_minor_ver = int(tf.__version__.split(".")[1])
+    if(tf_major_ver==0 and tf_minor_ver<11):
+        tf.scalar_summary('print_s/{}'.format(tensor_name), sum_)
+    else:
+        tf.summary.scalar('print_s/{}'.format(tensor_name), sum_)
